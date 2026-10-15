@@ -27,6 +27,9 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.verybid.backend.dto.event.BidEvent;
+import com.verybid.backend.websocket.AuctionEventPublisher;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -36,6 +39,7 @@ public class BidService {
     private final BidRepository bidRepository;
     private final UserRepository userRepository;
     private final TransactionRepository transactionRepository;
+    private final AuctionEventPublisher auctionEventPublisher;
 
     private static final int ANTI_SNIPING_WINDOW_MINUTES = 2;
     private static final int ANTI_SNIPING_EXTENSION_MINUTES = 2;
@@ -109,6 +113,18 @@ public class BidService {
         auction.setCurrentWinner(bidder);
         auctionRepository.save(auction);
 
+        // 9. Broadcast real-time WebSocket event
+        boolean isExtended = now.isAfter(antiSnipingThreshold);
+        auctionEventPublisher.publishEvent(auctionId, BidEvent.builder()
+                .eventType(isExtended ? "AUCTION_EXTENDED" : "NEW_BID")
+                .auctionId(auctionId)
+                .currentPrice(request.getBidAmount())
+                .highestBidderId(bidder.getId())
+                .highestBidderName(bidder.getFullName())
+                .endTime(auction.getEndTime())
+                .totalBids((long) (auction.getBids() != null ? auction.getBids().size() + 1 : 1))
+                .build());
+
         return BidResponse.fromEntity(savedBid);
     }
 
@@ -159,6 +175,17 @@ public class BidService {
                 .status(TransactionStatus.COMPLETED)
                 .build();
         transactionRepository.save(transaction);
+
+        // Broadcast buyout event
+        auctionEventPublisher.publishEvent(auctionId, BidEvent.builder()
+                .eventType("BUYOUT")
+                .auctionId(auctionId)
+                .currentPrice(auction.getBuyNowPrice())
+                .highestBidderId(buyer.getId())
+                .highestBidderName(buyer.getFullName())
+                .endTime(now)
+                .totalBids((long) (auction.getBids() != null ? auction.getBids().size() + 1 : 1))
+                .build());
 
         log.info("Auction {} was bought out immediately by {} for ${}", auctionId, buyerEmail, auction.getBuyNowPrice());
         return AuctionResponse.fromEntity(saved);

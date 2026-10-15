@@ -46,6 +46,9 @@ class BidServiceTests {
     @Mock
     private TransactionRepository transactionRepository;
 
+    @Mock
+    private com.verybid.backend.websocket.AuctionEventPublisher auctionEventPublisher;
+
     @InjectMocks
     private BidService bidService;
 

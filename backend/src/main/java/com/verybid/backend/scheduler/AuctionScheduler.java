@@ -7,6 +7,8 @@ import com.verybid.backend.model.enums.TransactionStatus;
 import com.verybid.backend.model.enums.TransactionType;
 import com.verybid.backend.repository.AuctionRepository;
 import com.verybid.backend.repository.TransactionRepository;
+import com.verybid.backend.dto.event.BidEvent;
+import com.verybid.backend.websocket.AuctionEventPublisher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -25,6 +27,7 @@ public class AuctionScheduler {
 
     private final AuctionRepository auctionRepository;
     private final TransactionRepository transactionRepository;
+    private final AuctionEventPublisher auctionEventPublisher;
 
     /**
      * Checks and updates auction lifecycle states every 15 seconds.
@@ -78,5 +81,15 @@ public class AuctionScheduler {
         } else {
             log.info("Auction {} ENDED with no bids.", auction.getId());
         }
+
+        // Broadcast AUCTION_ENDED event
+        auctionEventPublisher.publishEvent(auction.getId(), BidEvent.builder()
+                .eventType("AUCTION_ENDED")
+                .auctionId(auction.getId())
+                .currentPrice(auction.getCurrentPrice())
+                .highestBidderId(auction.getCurrentWinner() != null ? auction.getCurrentWinner().getId() : null)
+                .highestBidderName(auction.getCurrentWinner() != null ? auction.getCurrentWinner().getFullName() : null)
+                .endTime(auction.getEndTime())
+                .build());
     }
 }
