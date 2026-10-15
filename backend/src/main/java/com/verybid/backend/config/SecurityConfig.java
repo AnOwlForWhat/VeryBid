@@ -39,12 +39,11 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/api/v1/auth/**",
-                                "/api/v1/auctions/public/**",
-                                "/api/v1/categories/**"
-                        ).permitAll()
-                        .requestMatchers("/ws/**").permitAll() // WebSocket endpoint (to be secured later)
+                        .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/v1/categories/**").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/v1/auctions/**").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/v1/items/{id}").permitAll()
+                        .requestMatchers("/ws/**").permitAll() // WebSocket endpoint
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session ->
