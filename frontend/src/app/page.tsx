@@ -4,55 +4,15 @@ import React from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 
+import { Navbar } from "@/components/Navbar";
+
 export default function Home() {
-  const { user, isAuthenticated, isLoading, logout } = useAuth();
+  const { user, isAuthenticated } = useAuth();
 
   return (
     <div className="min-h-screen flex flex-col justify-between">
       {/* Header / Navbar */}
-      <header className="border-b border-slate-800 bg-slate-900/50 backdrop-blur-md sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <Link href="/" className="text-2xl font-black tracking-wider text-amber-500">
-            VERY<span className="text-slate-100">BID</span>
-          </Link>
-
-          <nav className="flex items-center gap-4">
-            {isLoading ? (
-              <span className="text-sm text-slate-400">Loading...</span>
-            ) : isAuthenticated && user ? (
-              <div className="flex items-center gap-4">
-                <div className="text-right hidden sm:block">
-                  <p className="text-sm font-semibold text-white">{user.fullName}</p>
-                  <p className="text-xs text-amber-400">
-                    Wallet: ${user.balance?.toFixed(2) ?? "0.00"} • Score: {user.reputationScore}
-                  </p>
-                </div>
-                <button
-                  onClick={logout}
-                  className="px-3 py-1.5 text-xs sm:text-sm font-medium text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-lg transition"
-                >
-                  Logout
-                </button>
-              </div>
-            ) : (
-              <div className="flex items-center gap-3">
-                <Link
-                  href="/auth/login"
-                  className="px-4 py-2 text-sm font-medium text-slate-200 hover:text-white transition"
-                >
-                  Sign In
-                </Link>
-                <Link
-                  href="/auth/register"
-                  className="px-4 py-2 text-sm font-semibold text-slate-950 bg-amber-500 hover:bg-amber-400 rounded-lg shadow-md hover:shadow-amber-500/20 transition"
-                >
-                  Get Started
-                </Link>
-              </div>
-            )}
-          </nav>
-        </div>
-      </header>
+      <Navbar />
 
       {/* Hero Section */}
       <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 flex flex-col items-center justify-center text-center">
@@ -98,7 +58,7 @@ export default function Home() {
 
         <div className="mt-10 flex flex-col sm:flex-row gap-4">
           <Link
-            href="/auth/register"
+            href="/auctions"
             className="px-8 py-3.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl shadow-xl hover:shadow-amber-500/25 transition duration-200"
           >
             Explore Auctions
