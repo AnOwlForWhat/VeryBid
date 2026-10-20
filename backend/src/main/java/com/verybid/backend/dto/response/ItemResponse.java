@@ -31,6 +31,7 @@ public class ItemResponse {
     private String sellerName;
     @Builder.Default
     private List<ItemImageResponse> images = new ArrayList<>();
+    private ItemAIReportResponse aiReport;
     private LocalDateTime createdAt;
 
     public static ItemResponse fromEntity(Item item) {
@@ -39,6 +40,10 @@ public class ItemResponse {
         List<ItemImageResponse> imageResponses = item.getImages() != null
                 ? item.getImages().stream().map(ItemImageResponse::fromEntity).collect(Collectors.toList())
                 : new ArrayList<>();
+
+        ItemAIReportResponse aiReportResponse = item.getAiReport() != null
+                ? ItemAIReportResponse.fromEntity(item.getAiReport())
+                : null;
 
         return ItemResponse.builder()
                 .id(item.getId())
@@ -51,6 +56,7 @@ public class ItemResponse {
                 .sellerId(item.getSeller() != null ? item.getSeller().getId() : null)
                 .sellerName(item.getSeller() != null ? item.getSeller().getFullName() : null)
                 .images(imageResponses)
+                .aiReport(aiReportResponse)
                 .createdAt(item.getCreatedAt())
                 .build();
     }

@@ -43,6 +43,7 @@ public class SecurityConfig {
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/v1/categories/**").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/v1/auctions/**").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/v1/items/{id}").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/v1/items/*/ai-report").permitAll()
                         .requestMatchers("/ws/**").permitAll() // WebSocket endpoint
                         .anyRequest().authenticated()
                 )
