@@ -6,16 +6,46 @@ export interface Category {
   createdAt: string;
 }
 
-export type ImageAngle = 'FRONT' | 'BACK' | 'DETAIL' | 'SERIAL_NUMBER' | 'DEFECT';
+export type ImageAngle =
+  | 'FRONT'
+  | 'BACK'
+  | 'LEFT'
+  | 'RIGHT'
+  | 'TOP'
+  | 'BOTTOM'
+  | 'SERIAL_NUMBER'
+  | 'SCRATCH_DETAIL'
+  | 'PACKAGING'
+  | 'OTHER';
 
 export interface ItemImage {
-  id: number;
+  id?: number;
   imageUrl: string;
   angle: ImageAngle;
   isThumbnail: boolean;
 }
 
-export type ItemStatus = 'DRAFT' | 'PENDING_AI' | 'VERIFIED' | 'REJECTED';
+export type ItemStatus =
+  | 'DRAFT'
+  | 'AI_ANALYZING'
+  | 'PENDING_REVIEW'
+  | 'APPROVED'
+  | 'REJECTED';
+
+export interface ItemAIReport {
+  id: number;
+  itemId: string;
+  identifiedModel: string;
+  conditionRate: string;
+  marketPriceMin: number;
+  marketPriceMax: number;
+  suggestedStartPrice: number;
+  riskFlags: string[];
+  trustScore: number;
+  moderatorNote?: string | null;
+  rawAiResponse?: string | null;
+  createdAt: string;
+}
 
 export interface Item {
   id: string;
@@ -28,10 +58,11 @@ export interface Item {
   sellerId: string;
   sellerName: string;
   images: ItemImage[];
+  aiReport?: ItemAIReport | null;
   createdAt: string;
 }
 
-export type AuctionStatus = 'UPCOMING' | 'ACTIVE' | 'ENDED' | 'CANCELLED';
+export type AuctionStatus = 'UPCOMING' | 'ACTIVE' | 'EXTENDED' | 'ENDED' | 'CANCELLED';
 
 export interface Auction {
   id: string;
@@ -94,4 +125,29 @@ export interface ApiResponse<T> {
   message: string;
   data: T;
   timestamp: string;
+}
+
+export interface CreateItemImagePayload {
+  imageUrl: string;
+  angle: ImageAngle;
+  isThumbnail: boolean;
+}
+
+export interface CreateItemPayload {
+  title: string;
+  description: string;
+  declaredCondition: string;
+  suggestedStartingPrice: number;
+  categoryId: number;
+  images: CreateItemImagePayload[];
+}
+
+export interface ReviewItemPayload {
+  status: 'APPROVED' | 'REJECTED';
+  moderatorNote?: string;
+  createAuction?: boolean;
+  startPrice?: number;
+  stepPrice?: number;
+  buyNowPrice?: number;
+  durationHours?: number;
 }

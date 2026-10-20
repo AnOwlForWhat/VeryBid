@@ -6,7 +6,11 @@ import {
   AuctionStatus,
   Bid,
   Category,
+  CreateItemPayload,
+  Item,
+  ItemAIReport,
   PageResponse,
+  ReviewItemPayload,
 } from "@/types/auction";
 
 export interface GetAuctionsParams {
@@ -76,6 +80,78 @@ export const auctionApi = {
   async getCategories(): Promise<Category[]> {
     const response = await apiClient.get<ApiResponse<Category[]>>(
       "/api/v1/categories"
+    );
+    return response.data.data;
+  },
+
+  /**
+   * Submit a new item request with multi-angle photos for AI appraisal and review
+   */
+  async createItem(payload: CreateItemPayload): Promise<Item> {
+    const response = await apiClient.post<ApiResponse<Item>>(
+      "/api/v1/items",
+      payload
+    );
+    return response.data.data;
+  },
+
+  /**
+   * Get items submitted by the current logged-in seller
+   */
+  async getMyItems(): Promise<Item[]> {
+    const response = await apiClient.get<ApiResponse<Item[]>>(
+      "/api/v1/items/my-items"
+    );
+    return response.data.data;
+  },
+
+  /**
+   * Get all pending items awaiting moderation review (with AI reports)
+   */
+  async getPendingItems(): Promise<Item[]> {
+    const response = await apiClient.get<ApiResponse<Item[]>>(
+      "/api/v1/items/pending"
+    );
+    return response.data.data;
+  },
+
+  /**
+   * Get item details by ID
+   */
+  async getItemById(id: string): Promise<Item> {
+    const response = await apiClient.get<ApiResponse<Item>>(
+      `/api/v1/items/${id}`
+    );
+    return response.data.data;
+  },
+
+  /**
+   * Moderator review endpoint (Approve or Reject with optional instant auction launch)
+   */
+  async reviewItem(id: string, payload: ReviewItemPayload): Promise<Item> {
+    const response = await apiClient.post<ApiResponse<Item>>(
+      `/api/v1/items/${id}/review`,
+      payload
+    );
+    return response.data.data;
+  },
+
+  /**
+   * Trigger AI re-appraisal for an item
+   */
+  async reAppraiseItem(id: string): Promise<Item> {
+    const response = await apiClient.post<ApiResponse<Item>>(
+      `/api/v1/items/${id}/appraise`
+    );
+    return response.data.data;
+  },
+
+  /**
+   * Get AI inspection report for an item
+   */
+  async getItemAiReport(id: string): Promise<ItemAIReport> {
+    const response = await apiClient.get<ApiResponse<ItemAIReport>>(
+      `/api/v1/items/${id}/ai-report`
     );
     return response.data.data;
   },

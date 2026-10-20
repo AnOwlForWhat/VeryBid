@@ -19,7 +19,25 @@ export function Navbar() {
               href="/auctions"
               className="text-sm font-medium text-slate-300 hover:text-amber-400 transition"
             >
-              Live Auctions
+              Sàn Đấu Giá
+            </Link>
+            <Link
+              href="/sell"
+              className="text-sm font-medium text-slate-300 hover:text-amber-400 transition flex items-center gap-1.5"
+            >
+              <span>Đăng Bán & Thẩm Định</span>
+              <span className="text-[10px] px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30 font-semibold">
+                AI
+              </span>
+            </Link>
+            <Link
+              href="/moderator"
+              className="text-sm font-medium text-slate-300 hover:text-amber-400 transition flex items-center gap-1.5"
+            >
+              <span>Ban Kiểm Duyệt</span>
+              <span className="text-[10px] px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-semibold">
+                Admin
+              </span>
             </Link>
           </nav>
         </div>
@@ -29,6 +47,12 @@ export function Navbar() {
             <span className="text-xs text-slate-400">Loading...</span>
           ) : isAuthenticated && user ? (
             <div className="flex items-center gap-4">
+              <Link
+                href="/sell"
+                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-slate-950 bg-amber-500 hover:bg-amber-400 rounded-lg shadow transition"
+              >
+                <span>+ Đăng Bán</span>
+              </Link>
               <div className="text-right hidden sm:block">
                 <p className="text-sm font-semibold text-white">{user.fullName}</p>
                 <p className="text-xs text-amber-400">
@@ -44,6 +68,12 @@ export function Navbar() {
             </div>
           ) : (
             <div className="flex items-center gap-3">
+              <Link
+                href="/sell"
+                className="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-amber-400 hover:text-amber-300 border border-amber-500/30 rounded-lg transition"
+              >
+                Đăng Bán
+              </Link>
               <Link
                 href="/auth/login"
                 className="px-3.5 py-1.5 text-sm font-medium text-slate-200 hover:text-white transition"
