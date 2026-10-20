@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { Navbar } from "@/components/Navbar";
 import { useAuth } from "@/context/AuthContext";
 import { auctionApi } from "@/services/auctionApi";
@@ -66,7 +65,6 @@ const PRESET_DEMOS = [
 ];
 
 export default function SellItemPage() {
-  const router = useRouter();
   const { isAuthenticated, isLoading: authLoading } = useAuth();
 
   const [categories, setCategories] = useState<Category[]>([]);

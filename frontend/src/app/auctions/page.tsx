@@ -282,6 +282,14 @@ export default function AuctionCatalogPage() {
                           </span>
                         </div>
                       )}
+                      {auction.item?.aiReport && (
+                        <div className="absolute bottom-3 left-3">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-950/85 backdrop-blur-md text-emerald-400 border border-emerald-500/40">
+                            <span>🛡️</span>
+                            <span>{auction.item.aiReport.trustScore}/100 AI Verified</span>
+                          </span>
+                        </div>
+                      )}
                     </div>
 
                     {/* Content */}

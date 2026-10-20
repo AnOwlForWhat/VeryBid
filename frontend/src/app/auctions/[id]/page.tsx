@@ -378,11 +378,11 @@ export default function LiveAuctionRoomPage() {
                     <h3 className="text-sm font-bold text-white flex items-center gap-2">
                       Gemini AI Authenticity Verification
                       <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                        VERIFIED
+                        TRUST SCORE {auction.item?.aiReport?.trustScore ?? 96}/100
                       </span>
                     </h3>
                     <p className="text-xs text-slate-400 mt-0.5">
-                      Analyzed 5 multi-angle high-resolution images & packaging integrity.
+                      Model nhận diện: <strong className="text-slate-200">{auction.item?.aiReport?.identifiedModel || auction.item?.title}</strong>
                     </p>
                   </div>
                 </div>
@@ -390,18 +390,34 @@ export default function LiveAuctionRoomPage() {
 
               <div className="mt-4 grid grid-cols-3 gap-3 pt-4 border-t border-amber-500/10 text-center">
                 <div className="bg-slate-950/60 p-2.5 rounded-xl border border-slate-800">
-                  <span className="text-[10px] text-slate-500 block">Authenticity</span>
-                  <span className="text-sm font-bold text-emerald-400">99.4% Match</span>
+                  <span className="text-[10px] text-slate-500 block">Trust Score</span>
+                  <span className="text-sm font-bold text-emerald-400">
+                    {auction.item?.aiReport?.trustScore ?? 95}/100
+                  </span>
                 </div>
                 <div className="bg-slate-950/60 p-2.5 rounded-xl border border-slate-800">
-                  <span className="text-[10px] text-slate-500 block">Condition Grade</span>
-                  <span className="text-sm font-bold text-amber-400">9.5 / 10 Mint</span>
+                  <span className="text-[10px] text-slate-500 block">Tình trạng AI chấm</span>
+                  <span className="text-sm font-bold text-amber-400">
+                    {auction.item?.aiReport?.conditionRate ?? "9.4/10 Mint"}
+                  </span>
                 </div>
                 <div className="bg-slate-950/60 p-2.5 rounded-xl border border-slate-800">
-                  <span className="text-[10px] text-slate-500 block">Tamper Check</span>
-                  <span className="text-sm font-bold text-blue-400">Intact Seal</span>
+                  <span className="text-[10px] text-slate-500 block">Định giá thị trường</span>
+                  <span className="text-sm font-bold text-blue-400">
+                    {auction.item?.aiReport?.marketPriceMin ? `$${auction.item.aiReport.marketPriceMin} - $${auction.item.aiReport.marketPriceMax}` : "Verified Value"}
+                  </span>
                 </div>
               </div>
+
+              {auction.item?.aiReport?.riskFlags && auction.item.aiReport.riskFlags.length > 0 && (
+                <div className="mt-4 pt-3 border-t border-slate-800/60 flex flex-wrap gap-1.5">
+                  {auction.item.aiReport.riskFlags.map((flag, idx) => (
+                    <span key={idx} className="text-[10px] px-2 py-0.5 rounded bg-slate-950/80 text-emerald-300 border border-emerald-500/20 font-medium">
+                      ✓ {flag.replace(/_/g, " ")}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
