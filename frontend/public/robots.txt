@@ -1,0 +1,2 @@
+# VeryBid Public Assets
+# Contains static web assets like favicon, logos, and banners

@@ -13,9 +13,15 @@ services:
       POSTGRES_PASSWORD: rootpassword
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root -d verybid_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     restart: unless-stopped
 
-  # Redis dùng để làm cache và chặn spam
+  # Redis dùng để làm cache và distributed lock
   redis:
     image: redis:7-alpine
     container_name: verybid-redis
@@ -23,6 +29,12 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
     restart: unless-stopped
 
   # Backend Spring Boot
@@ -34,8 +46,10 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/verybid_db
       SPRING_DATASOURCE_USERNAME: root
@@ -49,6 +63,9 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:8080
+        NEXT_PUBLIC_WS_URL: ws://localhost:8080/ws
     container_name: verybid-frontend
     ports:
       - "3000:3000"
