@@ -1,64 +1,185 @@
 # VeryBid 🚀
-> **AI-powered Verified Online Auction Platform**
+> **AI-Powered Verified Online Auction Platform for Rare Collectibles**
 
-## 📖 Overview
-VeryBid is a robust online auction platform designed specifically for the **Collectibles & Rare Items** niche (e.g., Diecast models, vintage tech, limited sneakers, antiques). It solves the biggest pain point in the secondary market: trust and authenticity. By leveraging Multimodal AI for automated initial item appraisal and integrating a high-performance real-time bidding engine, VeryBid ensures a fair, transparent, and exhilarating auction experience.
+[![Spring Boot](https://img.shields.io/badge/Spring_Boot-4.1.1-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
+[![Next.js](https://img.shields.io/badge/Next.js-14.2.35-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)](https://nextjs.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Redis](https://img.shields.io/badge/Redis-7-DC382D?style=for-the-badge&logo=redis&logoColor=white)](https://redis.io/)
+[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
 
-## ✨ Core Features
-### 1. AI-Assisted Moderation (Trust & Verify)
-- Sellers upload 5-10 detailed images of the item.
-- Background workers process the images asynchronously using **Multimodal AI (Gemini 1.5 Flash/Pro)** to:
-  - Identify the item model, authenticity markers, and specifications.
-  - Detect physical defects (scratches, damages) from images.
-  - Crawl web data for current market valuations.
-- The AI generates a Trust Score & Risk Report for human moderators to approve/reject.
+---
 
-### 2. Real-Time Bidding Engine (WebSockets)
-- Sub-second bid updates across all connected clients via STOMP WebSockets.
-- Synchronized countdown timers.
+## 📖 Tổng quan dự án
 
-### 3. Advanced Auction Rules
-- **Anti-Sniping (Soft Close):** Any bid placed within the last 2 minutes automatically extends the auction by an additional 2 minutes, preventing last-second bot sniping and ensuring fair price discovery.
-- **Buy-Now Option:** Sellers can set a premium price to allow buyers to instantly purchase the item, bypassing the auction wait time.
+**VeryBid** là sàn đấu giá trực tuyến chuyên biệt cho phân khúc **Đồ sưu tầm & Hàng hiếm** (Diecast models, thiết bị retro vintage tech, sneaker giới hạn, đồng hồ luxury, thẻ bài quý hiếm). 
 
-### 4. Concurrency & Race Condition Handling
-- Strict transaction locking (Optimistic/Pessimistic Locking in DB + Redis Distributed Lock) to handle hundreds of concurrent users attempting to bid at the exact same millisecond during the auction's closing moments.
+Nền tảng giải quyết bài toán lớn nhất của thị trường thứ cấp: **Niềm tin và tính xác thực (Trust & Authenticity)**. Nhờ tích hợp trí tuệ nhân tạo **Multimodal AI (Gemini Vision)** để thẩm định ảnh đa góc, chấm điểm **Trust Score**, cùng công cụ đấu giá thời gian thực hỗ trợ **Anti-Sniping (Soft Close)** và **Optimistic Locking**, VeryBid mang đến trải nghiệm đấu giá minh bạch, sòng phẳng và kịch tính.
 
-## 🛠 Tech Stack
-- **Backend:** Java Spring Boot 3, Spring Security, Spring Data JPA.
-- **Frontend:** Next.js (React), Tailwind CSS, shadcn/ui.
-- **Database:** PostgreSQL (Primary Data), Redis (Caching, Distributed Locks, Pub/Sub).
-- **Message Queue:** RabbitMQ (for async AI image processing).
-- **Real-time:** Spring WebSocket (STOMP).
-- **AI Integration:** Google Gemini API (Multimodal Vision & Search Grounding).
+---
 
-## 🛡️ DevOps, DevSecOps & QA
-This project is engineered with an enterprise-grade infrastructure mindset, focusing heavily on security, automation, and reliability under load.
+## ⚡ Khởi động 1-Click với Docker (Quick Start)
 
-### DevOps & Infrastructure
-- **Containerization:** Docker & Docker Compose for isolated microservices (API, PostgreSQL, Redis, RabbitMQ).
-- **CI/CD Pipeline:** GitHub Actions for automated build, test, and deployment.
-- **Monitoring & Logging:** Prometheus & Grafana to monitor traffic spikes and active WebSocket connections.
+Dự án đã được đóng gói tự động hóa 100%. Bạn **không cần cài đặt PostgreSQL hay Redis thủ công**, và **không cần chạy bất kỳ file SQL nào**. Hibernate và Seeder sẽ tự động tạo bảng và nạp sẵn dữ liệu mẫu.
 
-### DevSecOps & Security
-- **Authentication:** JWT with HttpOnly cookies for secure session management.
-- **Rate Limiting & Anti-Spam:** Redis-based API rate limiting to mitigate DDoS and brute-force bid spamming.
-- **Security Scanning (SAST):** SonarQube / Snyk integrated into the CI pipeline to automatically scan for vulnerabilities in code and dependencies.
-- **WebSocket Security:** Handshake interception and JWT validation for STOMP connections.
-- **Input Validation:** Strict sanitization to prevent SQL Injection and XSS.
+### 1. Yêu cầu hệ thống
+- Đã cài đặt [Docker](https://docs.docker.com/get-docker/) & [Docker Compose](https://docs.docker.com/compose/install/).
 
-### Quality Assurance & Testing
-- **Unit & Integration Testing:** JUnit 5, Mockito, Testcontainers.
-- **Stress & Load Testing (Crucial):** Using **JMeter** or **k6** to simulate the "Flash Crowd" effect (e.g., 1,000 concurrent users spamming the bid button in the final 10 seconds) to prove the system handles concurrency without crashing or data corruption.
+### 2. Khởi chạy toàn bộ hệ thống
+Mở terminal tại thư mục gốc của dự án và gõ đúng **1 lệnh duy nhất**:
 
-## 📐 System Architecture (High-Level)
-*(To be added: Architecture Diagram detailing Client -> Spring Boot API -> RabbitMQ -> AI Worker)*
+```bash
+docker compose up -d --build
+```
 
-## 🗄️ Database Schema
-*(To be added: ERD containing Users, Categories, Items, Item_Images, Item_AI_Reports, Auctions, Bids, Transactions)*
+### 3. Truy cập ứng dụng
+Sau khi các container khởi động hoàn tất (khoảng 30-45 giây):
 
-## 🛣️ Roadmap
-- **Phase 1: Foundation & Auth** - Setup Spring Boot, Next.js, Docker, PostgreSQL, JWT Auth.
-- **Phase 2: Core Auction & Real-time** - Auction CRUD, STOMP WebSockets, Bid Concurrency Locking.
-- **Phase 3: AI Moderation Pipeline** - Image Upload (AWS S3/Cloudinary), RabbitMQ Workers, Gemini API Integration.
-- **Phase 4: DevSecOps & Load Testing** - CI/CD, JMeter Load Testing, Security Hardening.
+| Dịch vụ | URL Truy Cập | Chức năng |
+| :--- | :--- | :--- |
+| **Frontend Web** | [http://localhost:3000](http://localhost:3000) | Giao diện sàn đấu giá, phòng live, đăng bán & kiểm duyệt |
+| **Backend REST API** | [http://localhost:8080/api/v1](http://localhost:8080/api/v1) | Toàn bộ RESTful endpoints và tài nguyên |
+| **WebSocket STOMP** | `ws://localhost:8080/ws` | Kênh truyền phát giá thầu thời gian thực |
+| **PostgreSQL Database** | `localhost:5432` (db: `verybid_db`) | Cơ sở dữ liệu chính |
+| **Redis Cache** | `localhost:6379` | Bộ nhớ tạm & Distributed Locks |
+
+---
+
+## 🔑 Tài khoản mẫu có sẵn (Pre-seeded Accounts)
+
+Hệ thống đã tự động kích hoạt 3 tài khoản thử nghiệm với mật khẩu chung: `password123`:
+
+| Tài khoản | Email | Mật khẩu | Quyền hạn |
+| :--- | :--- | :--- | :--- |
+| **Ban Kiểm Duyệt** | `admin@verybid.com` | `password123` | Toàn quyền duyệt sản phẩm tại `/moderator` |
+| **Người Bán Xác Thực** | `seller@verybid.com` | `password123` | Nộp sản phẩm thẩm định tại `/sell` |
+| **Nhà Sưu Tầm** | `bidder@verybid.com` | `password123` | Tham gia đấu giá tại `/auctions/[id]` |
+
+---
+
+## 📐 Kiến trúc hệ thống (System Architecture)
+
+```mermaid
+flowchart TD
+    subgraph Client["Next.js 14 Frontend"]
+        UI_Home["Landing Page (/)"]
+        UI_Catalog["Auction Floor (/auctions)"]
+        UI_Live["Live Room (/auctions/:id)"]
+        UI_Sell["Seller Studio (/sell)"]
+        UI_Mod["Moderator Hub (/moderator)"]
+    end
+
+    subgraph Backend["Spring Boot 4 Application"]
+        Security["Spring Security (JWT Filter)"]
+        STOMP["Spring WebSocket (STOMP Broker)"]
+        BiddingEngine["Bidding Engine (Optimistic Locking)"]
+        AIService["AI Appraisal Service (Gemini Multimodal)"]
+        Scheduler["Auction Scheduler (Soft-Close & Auto-Transitions)"]
+    end
+
+    subgraph Data["Infrastructure Services"]
+        PG[("PostgreSQL 15 Primary DB")]
+        RD[("Redis 7 Cache & Pub/Sub")]
+        Gemini[("Google Gemini 1.5 Flash Vision")]
+    end
+
+    Client -->|REST API Requests| Security
+    Client <-->|STOMP WebSockets| STOMP
+    Security --> BiddingEngine
+    Security --> AIService
+    BiddingEngine -->|Atomic Update| PG
+    BiddingEngine -->|Broadcast Bid Events| STOMP
+    Scheduler -->|Cron Checks| BiddingEngine
+    AIService -.->|Vision Grounding API| Gemini
+    Backend -->|Distributed Lock| RD
+```
+
+---
+
+## ✨ Các tính năng cốt lõi (Core Features)
+
+### 1. 🤖 AI Multimodal Appraisal (Thẩm định AI Đa Góc)
+- Người bán gửi **5 góc chụp tiêu chuẩn**: Mặt trước (`FRONT`), Mặt sau (`BACK`), Tem kiểm định/Mã Serial (`SERIAL_NUMBER`), Hộp & Bao bì (`PACKAGING`), Chi tiết vết trầy (`SCRATCH_DETAIL`).
+- AI Gemini Vision phân tích tự động:
+  - Nhận diện chính xác Model sản phẩm và năm sản xuất.
+  - Đối chiếu mã tem serial và phát hiện lỗi trầy xước.
+  - Tính toán khoảng giá thị trường (`marketPriceMin` - `marketPriceMax`).
+  - Gắn nhãn xác thực (`riskFlags`) và cấp điểm **Trust Score (0–100)**.
+
+### 2. 🛡️ Moderator Review & Auto-Launch (`/moderator`)
+- Giao diện đối soát chuyên nghiệp dành cho Ban Kiểm Duyệt: So sánh giữa *Khai báo người bán* vs *Kết luận của AI*.
+- Phê duyệt 1 chạm kèm tùy chọn **tự động lập phiên đấu giá lên sàn ngay lập tức**.
+
+### 3. ⚡ Phòng đấu giá thời gian thực (`/auctions/[id]`)
+- Đồng bộ bước giá và lượt đấu thầu thời gian thực qua kênh WebSocket STOMP sub-second.
+- **Quy tắc Chống Giật Giây Chót (Soft-Close / Anti-Sniping):** Mọi lượt bid trong 2 phút cuối sẽ tự động gia hạn thêm 2 phút để bảo đảm công bằng.
+- **Tùy chọn Mua Ngay (Instant Buy-Now):** Cho phép người mua chốt món đồ ngay lập tức theo giá niêm yết mà không cần chờ hết giờ.
+- **Chống tranh chấp (Concurrency Control):** Cơ chế **Optimistic Locking** (`@Version`) ngăn chặn xung đột khi hàng trăm người bấm bid cùng một mili-giây.
+
+---
+
+## 💻 Hướng dẫn chạy Development (Local Hot-Reload)
+
+Nếu bạn muốn chỉnh sửa code và tận dụng tính năng hot-reload:
+
+### Bước 1: Khởi động cơ sở dữ liệu nền bằng Docker
+```bash
+docker compose up -d postgres redis
+```
+
+### Bước 2: Chạy Backend Spring Boot
+```bash
+cd backend
+./mvnw spring-boot:run
+```
+*(Hoặc mở thư mục `backend` bằng IntelliJ IDEA và bấm Run `BackendApplication`)*
+
+### Bước 3: Chạy Frontend Next.js
+```bash
+cd frontend
+npm install
+npm run dev
+```
+Truy cập `http://localhost:3000` để bắt đầu lập trình.
+
+### Bước 4: Chạy bộ kiểm thử (Test Suite)
+```bash
+cd backend
+./mvnw test
+```
+Toàn bộ 27/27 bài kiểm thử tích hợp (Unit & Integration Tests) sẽ được thực thi trên môi trường in-memory database độc lập.
+
+---
+
+## 📂 Cấu trúc thư mục (Project Directory)
+
+```text
+VeryBid/
+├── backend/                  # Mã nguồn Spring Boot 4
+│   ├── src/main/java/com/verybid/backend/
+│   │   ├── config/           # DatabaseSeeder, SecurityConfig, WebSocketConfig
+│   │   ├── controller/       # Auction, Auth, Category, Item controllers
+│   │   ├── dto/              # Requests, Responses, WebSocket Event payloads
+│   │   ├── model/entity/     # User, Item, Auction, Bid, ItemAIReport, Transaction
+│   │   ├── repository/       # Spring Data JPA interfaces
+│   │   ├── service/          # AiAppraisalService, BidService, AuctionService, etc.
+│   │   └── websocket/        # Real-time STOMP event publisher
+│   └── Dockerfile            # Multi-stage container build cho Backend
+├── frontend/                 # Mã nguồn Next.js 14 (App Router)
+│   ├── src/
+│   │   ├── app/              # Trang chủ, /auctions, /sell, /moderator, /auth
+│   │   ├── components/       # CountdownTimer, Navbar, UI elements
+│   │   ├── context/          # AuthContext (quản lý phiên đăng nhập)
+│   │   ├── hooks/            # useAuctionWebSocket (kết nối STOMP real-time)
+│   │   └── services/         # Axios API clients
+│   ├── public/               # Static assets & icons
+│   └── Dockerfile            # Standalone Next.js production container
+├── docs/                     # Tài liệu thiết kế CSDL (DATABASE_DESIGN.md)
+├── docker-compose.yml        # Orchestration 4 microservices (DB, Cache, API, Web)
+├── .env.example              # Mẫu biến môi trường
+└── README.md                 # Tài liệu hướng dẫn chính
+```
+
+---
+
+## 📜 Bản quyền & Giấy phép
+Dự án được xây dựng và duy trì bởi nhóm phát triển **VeryBid** © 2026. Phục vụ mục đích học tập, nghiên cứu và triển khai hệ thống đấu giá trực tuyến thế hệ mới.
