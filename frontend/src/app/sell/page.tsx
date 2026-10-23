@@ -195,7 +195,6 @@ export default function SellItemPage() {
     setAiAnalyzingStep(1);
 
     try {
-      // Step simulation for AI vision pipeline
       setTimeout(() => setAiAnalyzingStep(2), 700);
       setTimeout(() => setAiAnalyzingStep(3), 1500);
 
@@ -223,233 +222,202 @@ export default function SellItemPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between">
-      <Navbar />
+    <div className="min-h-screen bg-[#ededec] flex flex-col justify-between p-2 sm:p-4">
+      <div className="retro-window max-w-5xl mx-auto w-full">
+        <Navbar />
 
-      <main className="flex-1 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full">
-        {/* Header Breadcrumb & Title */}
-        <div className="mb-8">
-          <div className="flex items-center gap-2 text-xs font-semibold text-amber-500 uppercase tracking-wider mb-2">
-            <span>VeryBid Seller Studio</span>
-            <span>•</span>
-            <span>AI Verified Appraisal</span>
-          </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-            Đăng Ký Sản Phẩm & Thẩm Định Đa Góc AI
-          </h1>
-          <p className="mt-2 text-sm sm:text-base text-slate-400">
-            Nộp 5 góc chụp tiêu chuẩn. Hệ thống AI Multimodal Vision sẽ tự động quét đối soát tem mác, tính điểm Trust Score và gửi hồ sơ sang Ban Kiểm Duyệt.
-          </p>
-        </div>
-
-        {/* Demo Fast Fillers */}
-        <div className="mb-8 p-4 rounded-xl bg-slate-900/80 border border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <div className="text-xs text-slate-400">
-            <span className="font-semibold text-amber-400">⚡ Test nhanh:</span> Chọn món đồ sưu tầm mẫu để tự động điền form & bộ ảnh chuẩn:
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {PRESET_DEMOS.map((demo, idx) => (
-              <button
-                key={idx}
-                type="button"
-                onClick={() => handleLoadDemo(demo)}
-                className="px-3 py-1.5 text-xs font-medium bg-slate-800 hover:bg-amber-500/20 hover:text-amber-300 hover:border-amber-500/40 text-slate-200 border border-slate-700 rounded-lg transition"
-              >
-                {demo.name.split(" ")[0]} {demo.name.split(" ")[1]}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Auth prompt if not logged in */}
-        {!authLoading && !isAuthenticated && (
-          <div className="mb-8 p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between">
-            <div className="text-sm text-amber-200">
-              ⚠️ Bạn cần đăng nhập tài khoản Người bán để nộp sản phẩm lên sàn.
+        <main className="p-4 sm:p-6 space-y-6">
+          {/* Header Title Box */}
+          <div className="retro-box p-4 bg-white flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <div className="text-xs font-bold text-gray-600 uppercase mb-1">
+                SELLER STUDIO • 5-ANGLE MULTIMODAL VERIFICATION
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+                Đăng Ký Sản Phẩm & Thẩm Định Đa Góc AI
+              </h1>
+              <p className="mt-1 text-sm text-gray-700">
+                Nộp 5 góc chụp tiêu chuẩn. AI Gemini Vision sẽ quét đối soát tem mác và cấp chứng thư Trust Score.
+              </p>
             </div>
-            <Link
-              href="/auth/login"
-              className="px-4 py-2 bg-amber-500 text-slate-950 font-bold text-xs rounded-lg shadow hover:bg-amber-400 transition"
-            >
-              Đăng nhập ngay
+
+            <Link href="/moderator" className="retro-btn text-xs bg-gray-100 font-bold self-start sm:self-center">
+              Xem Hàng Đợi Duyệt →
             </Link>
           </div>
-        )}
 
-        {errorMessage && (
-          <div className="mb-6 p-4 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-300 text-sm">
-            {errorMessage}
+          {/* Quick Demo Pre-fillers */}
+          <div className="retro-box p-3 bg-yellow-50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-sm">
+            <div>
+              <span className="font-bold">⚡ Nạp nhanh mẫu kiểm thử:</span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {PRESET_DEMOS.map((demo, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => handleLoadDemo(demo)}
+                  className="retro-btn py-0.5 px-2 text-xs bg-white"
+                >
+                  {demo.name.split(" ")[0]} {demo.name.split(" ")[1]}
+                </button>
+              ))}
+            </div>
           </div>
-        )}
 
-        {/* SUCCESS MODAL AFTER SUBMISSION */}
-        {submittedItem && (
-          <div className="p-8 rounded-2xl bg-slate-900 border border-emerald-500/40 shadow-2xl space-y-6">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-2xl font-bold">
-                ✓
-              </div>
-              <div>
-                <h3 className="text-2xl font-black text-white">Nộp Sản Phẩm Thành Công!</h3>
-                <p className="text-sm text-emerald-400">AI đã quét hoàn tất và lập Báo Cáo Thẩm Định (AI Report).</p>
-              </div>
+          {/* Auth warning */}
+          {!authLoading && !isAuthenticated && (
+            <div className="p-3 border-2 border-black bg-yellow-100 flex items-center justify-between text-sm">
+              <div>⚠️ Bạn cần đăng nhập tài khoản Người bán để nộp sản phẩm lên sàn.</div>
+              <Link href="/auth/login" className="retro-btn retro-btn-primary font-bold text-xs">
+                Đăng Nhập
+              </Link>
             </div>
+          )}
 
-            {/* AI Report Summary Card */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-5 rounded-xl bg-slate-950 border border-slate-800">
-              <div className="space-y-1">
-                <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Trust Score (Độ Tin Cậy)</span>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-black text-emerald-400">
-                    {submittedItem.aiReport?.trustScore ?? 92}/100
-                  </span>
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold">
-                    Xác Thực AI
-                  </span>
+          {errorMessage && (
+            <div className="p-3 border-2 border-red-600 bg-red-100 text-red-900 text-sm font-bold">
+              ⚠️ {errorMessage}
+            </div>
+          )}
+
+          {/* SUCCESS MODAL AFTER SUBMISSION */}
+          {submittedItem && (
+            <div className="retro-box p-6 bg-yellow-50 border-2 border-black space-y-4">
+              <div className="border-b-2 border-black pb-3 flex items-center justify-between">
+                <div>
+                  <h3 className="text-2xl font-black">✓ Nộp Sản Phẩm Thành Công!</h3>
+                  <p className="text-sm text-gray-700">AI đã hoàn tất quét 5 góc ảnh và lập Báo Cáo Thẩm Định.</p>
                 </div>
-                <p className="text-xs text-slate-400">Đã vượt qua kiểm định góc tem & phụ kiện.</p>
+                <span className="retro-badge bg-emerald-200 text-emerald-950 font-bold">
+                  PENDING_REVIEW
+                </span>
               </div>
 
-              <div className="space-y-1">
-                <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Tình trạng AI chấm</span>
-                <p className="text-lg font-bold text-white">
-                  {submittedItem.aiReport?.conditionRate ?? "9.4/10 (Collector Grade)"}
-                </p>
-                <p className="text-xs text-slate-400">Khai báo: {submittedItem.declaredCondition}</p>
+              {/* Summary Metrics */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="border border-black p-3 bg-white text-center">
+                  <span className="text-xs text-gray-500 uppercase block font-bold">Trust Score AI</span>
+                  <div className="text-3xl font-black text-emerald-800">
+                    {submittedItem.aiReport?.trustScore ?? 92}/100
+                  </div>
+                </div>
+
+                <div className="border border-black p-3 bg-white text-center">
+                  <span className="text-xs text-gray-500 uppercase block font-bold">Tình trạng AI chấm</span>
+                  <div className="text-base font-bold mt-1">
+                    {submittedItem.aiReport?.conditionRate ?? "9.4/10"}
+                  </div>
+                </div>
+
+                <div className="border border-black p-3 bg-white text-center">
+                  <span className="text-xs text-gray-500 uppercase block font-bold">Khoảng giá ước tính</span>
+                  <div className="text-base font-bold text-blue-900 mt-1">
+                    ${submittedItem.aiReport?.marketPriceMin?.toFixed(2)} - ${submittedItem.aiReport?.marketPriceMax?.toFixed(2)}
+                  </div>
+                </div>
               </div>
 
-              <div className="space-y-1">
-                <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Định giá thị trường AI</span>
-                <p className="text-lg font-bold text-amber-400">
-                  ${submittedItem.aiReport?.marketPriceMin?.toFixed(2)} - ${submittedItem.aiReport?.marketPriceMax?.toFixed(2)}
-                </p>
-                <p className="text-xs text-slate-400">Giá đề xuất khởi điểm: ${submittedItem.suggestedStartingPrice?.toFixed(2)}</p>
-              </div>
-            </div>
-
-            {/* Risk Flags */}
-            {submittedItem.aiReport?.riskFlags && submittedItem.aiReport.riskFlags.length > 0 && (
-              <div className="space-y-2">
-                <span className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Huy hiệu xác thực AI:</span>
-                <div className="flex flex-wrap gap-2">
+              {/* Risk Flags */}
+              {submittedItem.aiReport?.riskFlags && submittedItem.aiReport.riskFlags.length > 0 && (
+                <div className="flex flex-wrap gap-2 pt-2 border-t border-gray-300">
                   {submittedItem.aiReport.riskFlags.map((flag, idx) => (
-                    <span
-                      key={idx}
-                      className="px-3 py-1 rounded-md text-xs font-semibold bg-emerald-950/60 border border-emerald-500/30 text-emerald-300"
-                    >
+                    <span key={idx} className="retro-badge bg-white text-xs font-bold">
                       ✓ {flag.replace(/_/g, " ")}
                     </span>
                   ))}
                 </div>
+              )}
+
+              <div className="flex flex-wrap gap-3 pt-3 border-t-2 border-black">
+                <Link href="/moderator" className="retro-btn retro-btn-primary font-bold">
+                  Mở Ban Kiểm Duyệt Để Duyệt Ngay →
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSubmittedItem(null);
+                    setTitle("");
+                    setDescription("");
+                  }}
+                  className="retro-btn bg-white"
+                >
+                  Nộp Thêm Sản Phẩm Khác
+                </button>
               </div>
-            )}
-
-            <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-300 text-sm flex items-center justify-between">
-              <span>
-                Trạng thái hiện tại: <strong>PENDING_REVIEW</strong>. Sản phẩm đã nằm trong hàng đợi của Ban Kiểm Duyệt.
-              </span>
             </div>
+          )}
 
-            <div className="flex flex-wrap gap-4 pt-4 border-t border-slate-800">
-              <Link
-                href="/moderator"
-                className="px-6 py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl transition"
-              >
-                Mở Trang Kiểm Duyệt (Moderator Review) →
-              </Link>
-              <button
-                type="button"
-                onClick={() => {
-                  setSubmittedItem(null);
-                  setTitle("");
-                  setDescription("");
-                }}
-                className="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white font-semibold rounded-xl transition"
-              >
-                Nộp Thêm Sản Phẩm Khác
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* MAIN SUBMISSION FORM */}
-        {!submittedItem && (
-          <form onSubmit={handleSubmit} className="space-y-8">
-            {/* Step 1: Basic Information */}
-            <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-6">
-              <div className="border-b border-slate-800 pb-3 flex items-center justify-between">
-                <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-amber-500 text-slate-950 text-xs font-black flex items-center justify-center">
-                    1
-                  </span>
-                  Thông Tin Vật Phẩm & Khai Báo Ban Đầu
-                </h2>
-                <span className="text-xs text-slate-400">Bước 1 trên 2</span>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-2">
-                    Tên sản phẩm sưu tầm <span className="text-rose-400">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder="VD: 1968 Custom Camaro Hot Wheels Redline"
-                    className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-amber-500 focus:outline-none text-white text-sm"
-                  />
+          {/* MAIN FORM */}
+          {!submittedItem && (
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Step 1: Info */}
+              <div className="retro-box p-4 bg-white space-y-4">
+                <div className="border-b-2 border-black pb-2 flex items-center justify-between">
+                  <strong className="text-base">[01] THÔNG TIN SẢN PHẨM KHAI BÁO</strong>
+                  <span className="retro-badge text-xs">BƯỚC 1 / 2</span>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-2">
-                    Danh mục chuyên biệt <span className="text-rose-400">*</span>
-                  </label>
-                  <select
-                    value={selectedCategoryId}
-                    onChange={(e) => setSelectedCategoryId(Number(e.target.value))}
-                    className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-amber-500 focus:outline-none text-white text-sm"
-                  >
-                    {categories.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-2">
-                    Tình trạng tự khai báo (Seller Claim)
-                  </label>
-                  <input
-                    type="text"
-                    value={declaredCondition}
-                    onChange={(e) => setDeclaredCondition(e.target.value)}
-                    placeholder="VD: Mint 100%, Like New 95%, Brand New In Box"
-                    className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-amber-500 focus:outline-none text-white text-sm"
-                  />
-                  <div className="flex gap-2 mt-2">
-                    {["Mint 100%", "95% Like New", "Excellent", "Deadstock"].map((badge) => (
-                      <button
-                        key={badge}
-                        type="button"
-                        onClick={() => setDeclaredCondition(badge)}
-                        className="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300 hover:text-amber-400"
-                      >
-                        +{badge}
-                      </button>
-                    ))}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <label className="block font-bold mb-1">
+                      Tên món đồ sưu tầm <span className="text-red-600">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      placeholder="VD: 1968 Custom Camaro Hot Wheels Redline"
+                      className="retro-input w-full"
+                    />
                   </div>
-                </div>
 
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-2">
-                    Giá khởi điểm kỳ vọng ($ USD) <span className="text-rose-400">*</span>
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-3.5 top-2.5 text-slate-500 font-bold">$</span>
+                  <div>
+                    <label className="block font-bold mb-1">
+                      Danh mục chuyên biệt <span className="text-red-600">*</span>
+                    </label>
+                    <select
+                      value={selectedCategoryId}
+                      onChange={(e) => setSelectedCategoryId(Number(e.target.value))}
+                      className="retro-select w-full"
+                    >
+                      {categories.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block font-bold mb-1">
+                      Tình trạng tự khai báo (Seller Claim)
+                    </label>
+                    <input
+                      type="text"
+                      value={declaredCondition}
+                      onChange={(e) => setDeclaredCondition(e.target.value)}
+                      className="retro-input w-full"
+                    />
+                    <div className="flex gap-1.5 mt-1">
+                      {["Mint 100%", "95% Like New", "Excellent", "Deadstock"].map((badge) => (
+                        <button
+                          key={badge}
+                          type="button"
+                          onClick={() => setDeclaredCondition(badge)}
+                          className="retro-badge text-xs bg-gray-100 hover:bg-yellow-200 cursor-pointer"
+                        >
+                          +{badge}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block font-bold mb-1">
+                      Giá khởi điểm kỳ vọng ($ USD) <span className="text-red-600">*</span>
+                    </label>
                     <input
                       type="number"
                       min="1"
@@ -457,77 +425,55 @@ export default function SellItemPage() {
                       required
                       value={suggestedStartingPrice}
                       onChange={(e) => setSuggestedStartingPrice(e.target.value)}
-                      className="w-full pl-8 pr-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-amber-500 focus:outline-none text-white text-sm font-semibold"
+                      className="retro-input w-full font-bold"
                     />
                   </div>
                 </div>
-              </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-2">
-                  Mô tả chi tiết & Nguồn gốc xuất xứ (Provenance) <span className="text-rose-400">*</span>
-                </label>
-                <textarea
-                  rows={4}
-                  required
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Ghi rõ năm sản xuất, lịch sử bảo quản, phụ kiện đi kèm để AI dễ xác thực..."
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-amber-500 focus:outline-none text-white text-sm leading-relaxed"
-                />
-              </div>
-            </div>
-
-            {/* Step 2: Multi-Angle Authenticity Image Studio */}
-            <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-6">
-              <div className="border-b border-slate-800 pb-3 flex items-center justify-between">
                 <div>
-                  <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                    <span className="w-6 h-6 rounded-full bg-amber-500 text-slate-950 text-xs font-black flex items-center justify-center">
-                      2
-                    </span>
-                    Bộ Ảnh 5 Góc Tiêu Chuẩn Thẩm Định AI
-                  </h2>
-                  <p className="text-xs text-slate-400 mt-1">
-                    Cung cấp URL ảnh chất lượng cao tương ứng với từng góc chụp để đạt điểm Trust Score cao nhất.
-                  </p>
+                  <label className="block font-bold mb-1">
+                    Mô tả chi tiết & Nguồn gốc xuất xứ (Provenance) <span className="text-red-600">*</span>
+                  </label>
+                  <textarea
+                    rows={3}
+                    required
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Ghi rõ năm sản xuất, lịch sử bảo quản để AI Gemini dễ đối soát..."
+                    className="retro-input w-full"
+                  />
                 </div>
-                <span className="text-xs text-slate-400">Bước 2 trên 2</span>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {angleSlots.map((slot) => (
-                  <div
-                    key={slot.angle}
-                    className={`p-4 rounded-xl border transition ${
-                      slot.url.trim()
-                        ? "bg-slate-950 border-amber-500/40"
-                        : "bg-slate-950/60 border-slate-800"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-xs font-bold text-white flex items-center gap-2">
-                        {slot.label}
-                        {slot.isRequired && <span className="text-rose-400">*</span>}
-                      </span>
-                      <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                        {slot.bonus}
-                      </span>
-                    </div>
-                    <p className="text-[11px] text-slate-400 mb-3">{slot.description}</p>
+              {/* Step 2: 5 Angles */}
+              <div className="retro-box p-4 bg-white space-y-4">
+                <div className="border-b-2 border-black pb-2 flex items-center justify-between">
+                  <strong className="text-base">[02] BỘ ẢNH 5 GÓC CHỤP THẨM ĐỊNH AI</strong>
+                  <span className="retro-badge text-xs">BƯỚC 2 / 2</span>
+                </div>
 
-                    <div className="space-y-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                  {angleSlots.map((slot) => (
+                    <div key={slot.angle} className="border-2 border-black p-3 bg-gray-50 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <strong>
+                          {slot.label} {slot.isRequired && <span className="text-red-600">*</span>}
+                        </strong>
+                        <span className="retro-badge bg-yellow-200 text-[11px] font-bold">
+                          {slot.bonus}
+                        </span>
+                      </div>
+                      <p className="text-gray-600 text-[11px]">{slot.description}</p>
                       <input
                         type="url"
                         value={slot.url}
                         onChange={(e) => handleAngleUrlChange(slot.angle, e.target.value)}
-                        placeholder="https://... ảnh HD"
-                        className="w-full px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 focus:border-amber-500 focus:outline-none text-xs text-slate-200"
+                        placeholder="https://... URL ảnh HD"
+                        className="retro-input w-full text-xs py-1"
                       />
 
-                      {/* Small thumbnail preview */}
                       {slot.url.trim() && (
-                        <div className="relative h-28 w-full rounded-lg overflow-hidden border border-slate-800 bg-slate-900">
+                        <div className="h-24 w-full border border-black overflow-hidden bg-white">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
                             src={slot.url}
@@ -538,84 +484,46 @@ export default function SellItemPage() {
                                 "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=600&q=80";
                             }}
                           />
-                          <span className="absolute bottom-1 right-1 text-[9px] font-mono px-1.5 py-0.5 rounded bg-slate-950/80 text-amber-400">
-                            {slot.angle}
-                          </span>
                         </div>
                       )}
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
 
-            {/* AI PIPELINE SIMULATION MODAL */}
-            {isSubmitting && (
-              <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-                <div className="bg-slate-900 border border-amber-500/30 p-8 rounded-2xl max-w-md w-full text-center space-y-6 shadow-2xl">
-                  <div className="relative w-20 h-20 mx-auto">
-                    <div className="absolute inset-0 rounded-full border-4 border-amber-500/20 animate-ping"></div>
-                    <div className="w-20 h-20 rounded-full border-4 border-amber-500 border-t-transparent animate-spin flex items-center justify-center">
-                      <span className="text-2xl">🤖</span>
-                    </div>
-                  </div>
+              {/* AI SIMULATION MODAL (Clean retro dialog, NO green text on black) */}
+              {isSubmitting && (
+                <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
+                  <div className="retro-window max-w-md w-full p-6 text-center space-y-4 bg-white">
+                    <div className="text-3xl font-mono">⌛ [ GEMINI VISION SCANNING... ]</div>
+                    <p className="text-sm text-gray-700">Mô hình AI đang đối soát 5 góc ảnh và tính toán Trust Score...</p>
 
-                  <div className="space-y-2">
-                    <h3 className="text-xl font-black text-white">Gemini Multimodal AI Đang Thẩm Định</h3>
-                    <p className="text-xs text-slate-400">Vui lòng đợi giây lát trong khi mô hình kiểm duyệt phân tích...</p>
-                  </div>
-
-                  <div className="space-y-3 text-left p-4 rounded-xl bg-slate-950 border border-slate-800 text-xs">
-                    <div className="flex items-center gap-2">
-                      <span className={aiAnalyzingStep >= 1 ? "text-emerald-400" : "text-slate-600"}>
-                        {aiAnalyzingStep >= 1 ? "✓" : "○"}
-                      </span>
-                      <span className={aiAnalyzingStep >= 1 ? "text-white" : "text-slate-500"}>
-                        Quét 5 góc ảnh & phân tích vết xước bề mặt
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className={aiAnalyzingStep >= 2 ? "text-emerald-400" : "text-slate-600"}>
-                        {aiAnalyzingStep >= 2 ? "✓" : "○"}
-                      </span>
-                      <span className={aiAnalyzingStep >= 2 ? "text-white" : "text-slate-500"}>
-                        Kiểm định tem mác Serial & tính điểm Trust Score
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className={aiAnalyzingStep >= 3 ? "text-emerald-400" : "text-slate-600"}>
-                        {aiAnalyzingStep >= 3 ? "✓" : "○"}
-                      </span>
-                      <span className={aiAnalyzingStep >= 3 ? "text-white" : "text-slate-500"}>
-                        Ước lượng khoảng giá thị trường & tạo AI Report
-                      </span>
+                    <div className="space-y-2 text-left border-2 border-black p-3 bg-gray-50 text-xs font-mono">
+                      <div>{aiAnalyzingStep >= 1 ? "✓ [OK]" : "○ [...]"} Quét lỗi trầy xước & phân giải ảnh</div>
+                      <div>{aiAnalyzingStep >= 2 ? "✓ [OK]" : "○ [...]"} Xác minh tem kiểm định & mã serial</div>
+                      <div>{aiAnalyzingStep >= 3 ? "✓ [OK]" : "○ [...]"} Tính toán Trust Score & biên độ giá</div>
                     </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* Submit Action Bar */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-6 rounded-2xl bg-slate-900 border border-slate-800">
-              <div className="text-xs text-slate-400">
-                Khi nhấn nộp, hồ sơ sẽ được AI chấm điểm và tự động chuyển đến hàng đợi Ban Kiểm Duyệt.
+              {/* Action Bar */}
+              <div className="retro-box p-4 bg-gray-50 flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div className="text-xs text-gray-600">
+                  Khi bấm nộp, hồ sơ sẽ được AI chấm điểm và tự động chuyển đến Ban Kiểm Duyệt.
+                </div>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="retro-btn retro-btn-primary font-black px-6 py-2.5 text-base"
+                >
+                  GỬI THẨM ĐỊNH & NỘP LÊN SÀN →
+                </button>
               </div>
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full sm:w-auto px-8 py-3.5 bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-slate-950 font-bold rounded-xl shadow-lg hover:shadow-amber-500/20 transition flex items-center justify-center gap-2"
-              >
-                <span>Gửi Thẩm Định & Nộp Lên Sàn</span>
-                <span>→</span>
-              </button>
-            </div>
-          </form>
-        )}
-      </main>
-
-      <footer className="border-t border-slate-900 py-6 text-center text-xs text-slate-500">
-        &copy; 2026 VeryBid Platform. Multimodal AI Vision Authenticity Protocol.
-      </footer>
+            </form>
+          )}
+        </main>
+      </div>
     </div>
   );
 }

@@ -63,9 +63,10 @@ export default function ModeratorDashboardPage() {
     const start = item.suggestedStartingPrice || 100;
     setAuctionStartPrice(start.toString());
     setAuctionStepPrice(Math.max(5, Math.round(start * 0.05)).toString());
-    setAuctionBuyNowPrice(item.aiReport?.marketPriceMax ? item.aiReport.marketPriceMax.toString() : (start * 2).toString());
+    setAuctionBuyNowPrice(
+      item.aiReport?.marketPriceMax ? item.aiReport.marketPriceMax.toString() : (start * 2).toString()
+    );
 
-    // Set default preview image
     const initialImg =
       item.images?.find((img) => img.isThumbnail)?.imageUrl ||
       item.images?.[0]?.imageUrl ||
@@ -99,11 +100,12 @@ export default function ModeratorDashboardPage() {
 
       setSuccessMessage(
         status === "APPROVED"
-          ? `Đã phê duyệt sản phẩm "${updated.title}" thành công${createAuctionOnApprove ? " và tạo phiên đấu giá lên sàn!" : "."}`
+          ? `Đã phê duyệt sản phẩm "${updated.title}" thành công${
+              createAuctionOnApprove ? " và tạo phiên đấu giá lên sàn!" : "."
+            }`
           : `Đã từ chối sản phẩm "${updated.title}".`
       );
 
-      // Refresh list
       const remaining = pendingItems.filter((i) => i.id !== selectedItem.id);
       setPendingItems(remaining);
       if (remaining.length > 0) {
@@ -139,30 +141,21 @@ export default function ModeratorDashboardPage() {
     }
   };
 
-  const getScoreColor = (score?: number) => {
-    if (!score) return "text-slate-400 bg-slate-800 border-slate-700";
-    if (score >= 85) return "text-emerald-400 bg-emerald-500/10 border-emerald-500/30";
-    if (score >= 70) return "text-amber-400 bg-amber-500/10 border-amber-500/30";
-    return "text-rose-400 bg-rose-500/10 border-rose-500/30";
-  };
-
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between">
-      <Navbar />
+    <div className="min-h-screen py-4 px-2 sm:px-6 flex flex-col justify-between">
+      <div className="retro-window max-w-7xl mx-auto w-full mb-8">
+        <Navbar />
 
-      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
-        {/* Header Bar */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        {/* Sub Header Bar */}
+        <div className="p-4 border-b-2 border-black bg-[#f6f6f5] flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-xs font-semibold text-indigo-400 uppercase tracking-wider mb-1">
-              <span>Admin & Moderator Portal</span>
-              <span>•</span>
-              <span>{user ? `Kiểm duyệt viên: ${user.fullName}` : "Hàng đợi thẩm định"}</span>
+            <div className="text-xs uppercase tracking-wider text-neutral-600 mb-1">
+              [PANEL::MODERATOR] • {user ? `Kiểm duyệt viên: ${user.fullName}` : "Hàng đợi thẩm định"}
             </div>
-            <h1 className="text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
-              <span>Ban Kiểm Duyệt Vật Phẩm</span>
-              <span className="text-xs px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30 font-bold">
-                {pendingItems.length} Chờ duyệt
+            <h1 className="text-2xl sm:text-3xl font-black text-black tracking-tight flex items-center gap-3">
+              <span>BAN KIỂM DUYỆT VẬT PHẨM</span>
+              <span className="retro-badge bg-black text-white px-2 py-0.5 text-sm">
+                {pendingItems.length} CHỜ DUYỆT
               </span>
             </h1>
           </div>
@@ -171,424 +164,424 @@ export default function ModeratorDashboardPage() {
             <button
               onClick={loadPendingItems}
               disabled={isLoading}
-              className="px-4 py-2 text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 rounded-xl transition flex items-center gap-2"
+              className="retro-btn text-xs py-1.5 px-3"
             >
-              <span>🔄 Làm mới</span>
+              🔄 [RELOAD]
             </button>
             <Link
               href="/sell"
-              className="px-4 py-2 text-xs font-bold bg-amber-500 hover:bg-amber-400 text-slate-950 rounded-xl transition shadow"
+              className="retro-btn bg-[#fef08a] text-xs py-1.5 px-3 font-bold"
             >
-              + Nộp thử món đồ mới
+              + [NỘP MÓN ĐỒ MỚI]
             </Link>
           </div>
         </div>
 
-        {/* Auth prompt if not logged in */}
-        {!authLoading && !isAuthenticated && (
-          <div className="mb-6 p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between">
-            <div className="text-sm text-amber-200">
-              ⚠️ Bạn chưa đăng nhập tài khoản Quản trị / Kiểm duyệt viên.
-            </div>
-            <Link
-              href="/auth/login"
-              className="px-4 py-2 bg-amber-500 text-slate-950 font-bold text-xs rounded-lg shadow hover:bg-amber-400 transition"
-            >
-              Đăng nhập Admin
-            </Link>
-          </div>
-        )}
-
-        {/* Notifications */}
-        {successMessage && (
-          <div className="mb-6 p-4 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-sm flex items-center justify-between">
-            <span>✓ {successMessage}</span>
-            <button onClick={() => setSuccessMessage(null)} className="text-emerald-400 hover:text-white">✕</button>
-          </div>
-        )}
-
-        {errorMessage && (
-          <div className="mb-6 p-4 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-300 text-sm flex items-center justify-between">
-            <span>⚠️ {errorMessage}</span>
-            <button onClick={() => setErrorMessage(null)} className="text-rose-400 hover:text-white">✕</button>
-          </div>
-        )}
-
-        {/* Loading State */}
-        {isLoading && (
-          <div className="text-center py-24 space-y-4">
-            <div className="w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-            <p className="text-slate-400 text-sm">Đang tải hàng đợi kiểm duyệt...</p>
-          </div>
-        )}
-
-        {/* Empty State */}
-        {!isLoading && pendingItems.length === 0 && (
-          <div className="text-center py-24 bg-slate-900/40 rounded-2xl border border-slate-800/80 p-8">
-            <div className="w-16 h-16 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center text-3xl mx-auto mb-4">
-              🎉
-            </div>
-            <h3 className="text-xl font-bold text-white mb-2">Hàng Đợi Kiểm Duyệt Đang Trống</h3>
-            <p className="text-sm text-slate-400 max-w-md mx-auto mb-6">
-              Tất cả các sản phẩm do người bán nộp đều đã được kiểm duyệt hoặc chưa có hồ sơ mới.
-            </p>
-            <Link
-              href="/sell"
-              className="px-6 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl shadow transition"
-            >
-              Đăng sản phẩm kiểm thử ngay →
-            </Link>
-          </div>
-        )}
-
-        {/* Main Review Layout: Master / Detail */}
-        {!isLoading && pendingItems.length > 0 && selectedItem && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            {/* Left Queue Column: 4 cols */}
-            <div className="lg:col-span-4 space-y-3">
-              <div className="text-xs font-bold text-slate-400 uppercase tracking-wider px-1">
-                Danh sách chờ xét duyệt ({pendingItems.length})
+        {/* Content Body */}
+        <div className="p-4 sm:p-6 space-y-6">
+          {/* Auth prompt if not logged in */}
+          {!authLoading && !isAuthenticated && (
+            <div className="retro-box p-4 bg-[#fffbeb] border-2 border-black flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div className="text-sm text-black font-bold">
+                ⚠ Bạn chưa đăng nhập tài khoản Quản trị / Kiểm duyệt viên.
               </div>
-              <div className="space-y-2 max-h-[780px] overflow-y-auto pr-1">
-                {pendingItems.map((item) => {
-                  const isSelected = item.id === selectedItem.id;
-                  const thumb =
-                    item.images?.find((img) => img.isThumbnail)?.imageUrl ||
-                    item.images?.[0]?.imageUrl ||
-                    "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&q=80";
-                  const score = item.aiReport?.trustScore;
+              <Link
+                href="/auth/login"
+                className="retro-btn bg-black text-white text-xs px-4 py-1.5"
+              >
+                Đăng nhập Admin
+              </Link>
+            </div>
+          )}
 
-                  return (
-                    <div
-                      key={item.id}
-                      onClick={() => selectItemForReview(item)}
-                      className={`p-3.5 rounded-xl border transition cursor-pointer flex gap-3 ${
-                        isSelected
-                          ? "bg-slate-900 border-amber-500 shadow-lg shadow-amber-500/10"
-                          : "bg-slate-900/60 border-slate-800/80 hover:bg-slate-900 hover:border-slate-700"
-                      }`}
-                    >
-                      <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-slate-950 border border-slate-800">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={thumb} alt={item.title} className="w-full h-full object-cover" />
-                      </div>
-                      <div className="flex-1 min-w-0 flex flex-col justify-between">
-                        <div>
-                          <div className="flex items-center justify-between gap-1">
-                            <span className="text-[10px] text-amber-400 font-semibold truncate">
-                              {item.category?.name || "Sưu tầm"}
-                            </span>
-                            {score !== undefined && (
-                              <span
-                                className={`text-[10px] font-bold px-1.5 py-0.2 rounded border ${getScoreColor(
-                                  score
-                                )}`}
-                              >
-                                {score}/100
-                              </span>
-                            )}
+          {/* Notifications */}
+          {successMessage && (
+            <div className="retro-box p-3 bg-[#f0fdf4] border-2 border-black flex items-center justify-between text-sm font-bold text-black">
+              <span>✓ {successMessage}</span>
+              <button
+                onClick={() => setSuccessMessage(null)}
+                className="retro-btn text-xs px-2 py-0.5"
+              >
+                [X]
+              </button>
+            </div>
+          )}
+
+          {errorMessage && (
+            <div className="retro-box p-3 bg-[#fef2f2] border-2 border-black flex items-center justify-between text-sm font-bold text-black">
+              <span>⚠ {errorMessage}</span>
+              <button
+                onClick={() => setErrorMessage(null)}
+                className="retro-btn text-xs px-2 py-0.5"
+              >
+                [X]
+              </button>
+            </div>
+          )}
+
+          {/* Loading State */}
+          {isLoading && (
+            <div className="retro-box p-12 text-center bg-white">
+              <div className="text-xl font-bold tracking-widest animate-pulse">
+                [... ĐANG TẢI DỮ LIỆU KIỂM DUYỆT ...]
+              </div>
+            </div>
+          )}
+
+          {/* Empty State */}
+          {!isLoading && pendingItems.length === 0 && (
+            <div className="retro-box p-12 text-center bg-white space-y-4">
+              <div className="text-4xl">✿</div>
+              <h3 className="text-xl font-black text-black">HÀNG ĐỢI KIỂM DUYỆT ĐANG TRỐNG</h3>
+              <p className="text-sm text-neutral-600 max-w-md mx-auto">
+                Tất cả các sản phẩm do người bán nộp đều đã được kiểm duyệt hoặc chưa có hồ sơ mới.
+              </p>
+              <div className="pt-2">
+                <Link href="/sell" className="retro-btn bg-[#fef08a] px-6 py-2 font-bold inline-block">
+                  → Nộp thử sản phẩm kiểm định
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {/* Main Review Layout */}
+          {!isLoading && pendingItems.length > 0 && selectedItem && (
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              {/* Left Queue Column */}
+              <div className="lg:col-span-4 space-y-3">
+                <div className="text-xs font-bold uppercase tracking-wider text-neutral-600">
+                  ▶ DANH SÁCH CHỜ DUYỆT ({pendingItems.length})
+                </div>
+
+                <div className="space-y-3 max-h-[780px] overflow-y-auto pr-1">
+                  {pendingItems.map((item) => {
+                    const isSelected = item.id === selectedItem.id;
+                    const thumb =
+                      item.images?.find((img) => img.isThumbnail)?.imageUrl ||
+                      item.images?.[0]?.imageUrl ||
+                      "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&q=80";
+                    const score = item.aiReport?.trustScore;
+
+                    return (
+                      <div
+                        key={item.id}
+                        onClick={() => selectItemForReview(item)}
+                        className={`retro-box p-3 cursor-pointer transition ${
+                          isSelected ? "bg-[#fef08a] border-2" : "bg-white hover:bg-[#fafaf9]"
+                        }`}
+                      >
+                        <div className="flex gap-3">
+                          <div className="w-16 h-16 border-2 border-black flex-shrink-0 bg-neutral-100 overflow-hidden">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={thumb} alt={item.title} className="w-full h-full object-cover" />
                           </div>
-                          <h4 className="text-xs font-bold text-white truncate mt-0.5">{item.title}</h4>
+                          <div className="flex-1 min-w-0 flex flex-col justify-between">
+                            <div>
+                              <div className="flex items-center justify-between gap-1 mb-0.5">
+                                <span className="text-[11px] font-bold text-neutral-700 truncate">
+                                  [{item.category?.name || "SƯU TẦM"}]
+                                </span>
+                                {score !== undefined && (
+                                  <span className="retro-badge bg-black text-white text-[10px] px-1">
+                                    {score}/100
+                                  </span>
+                                )}
+                              </div>
+                              <h4 className="text-xs font-black truncate">{item.title}</h4>
+                            </div>
+                            <div className="flex items-center justify-between text-xs text-neutral-600 font-bold">
+                              <span>${item.suggestedStartingPrice?.toFixed(0)}</span>
+                              <span className="text-[10px]">{item.images?.length || 0} góc ảnh</span>
+                            </div>
+                          </div>
                         </div>
-                        <div className="flex items-center justify-between text-[11px] text-slate-400">
-                          <span>${item.suggestedStartingPrice?.toFixed(0)}</span>
-                          <span className="text-[10px] text-slate-500">
-                            {item.images?.length || 0} góc ảnh
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Right Detailed Audit Column */}
+              <div className="lg:col-span-8 space-y-6">
+                {/* Item Details Box */}
+                <div className="retro-box p-5 bg-white space-y-5">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b-2 border-black pb-4">
+                    <div>
+                      <div className="flex items-center gap-2 mb-1 text-xs">
+                        <span className="retro-badge bg-black text-white px-2 py-0.5">
+                          {selectedItem.category?.name}
+                        </span>
+                        <span className="text-neutral-600">
+                          Người bán: <strong className="text-black">{selectedItem.sellerName}</strong>
+                        </span>
+                      </div>
+                      <h2 className="text-xl sm:text-2xl font-black text-black uppercase">
+                        {selectedItem.title}
+                      </h2>
+                    </div>
+
+                    <div className="retro-box p-3 bg-[#fef08a] border-2 border-black flex items-center gap-3">
+                      <div>
+                        <div className="text-[10px] uppercase font-bold tracking-wider">
+                          GEMINI TRUST SCORE
+                        </div>
+                        <div className="text-2xl font-black">
+                          {selectedItem.aiReport?.trustScore ?? 80}
+                          <span className="text-xs font-normal">/100</span>
+                        </div>
+                      </div>
+                      <div className="text-2xl">🛡️</div>
+                    </div>
+                  </div>
+
+                  {/* Multi-Angle Photo Inspector */}
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold uppercase tracking-wider text-black">
+                        ▶ THƯ VIỆN GÓC ẢNH KIỂM TRA ({selectedItem.images?.length || 0} ẢNH)
+                      </span>
+                      <button
+                        type="button"
+                        onClick={handleReAppraise}
+                        disabled={isActionLoading}
+                        className="retro-btn text-xs px-2.5 py-0.5 disabled:opacity-50"
+                      >
+                        🔄 [CHẠY LẠI GEMINI VISION]
+                      </button>
+                    </div>
+
+                    {/* Main Viewer */}
+                    {selectedAngleImage ? (
+                      <div className="relative h-72 sm:h-96 w-full border-2 border-black bg-neutral-100 flex items-center justify-center overflow-hidden">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={selectedAngleImage}
+                          alt="Audited Angle"
+                          className="w-full h-full object-contain"
+                        />
+                        <span className="absolute bottom-2 left-2 text-xs font-bold px-2 py-0.5 bg-black text-white border border-black">
+                          GÓC: {activeAngleTab}
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="h-48 border-2 border-black bg-neutral-100 flex items-center justify-center text-neutral-500 text-xs">
+                        [Không có ảnh nào được tải lên]
+                      </div>
+                    )}
+
+                    {/* Angle Switcher Tabs */}
+                    {selectedItem.images && selectedItem.images.length > 0 && (
+                      <div className="grid grid-cols-5 gap-2 pt-1">
+                        {selectedItem.images.map((img, idx) => {
+                          const isActive = activeAngleTab === img.angle;
+                          return (
+                            <button
+                              key={idx}
+                              type="button"
+                              onClick={() => handleSelectAngle(img.angle, img.imageUrl)}
+                              className={`retro-box p-1 text-left transition ${
+                                isActive ? "bg-[#fef08a] border-2" : "bg-white"
+                              }`}
+                            >
+                              <div className="h-12 w-full border border-black overflow-hidden bg-neutral-100 mb-1">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img src={img.imageUrl} alt={img.angle} className="w-full h-full object-cover" />
+                              </div>
+                              <div className="text-[10px] font-bold truncate text-center uppercase">
+                                {img.angle}
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Comparison Side-by-side */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                    {/* Seller Claim */}
+                    <div className="retro-box p-4 bg-[#fbfbfa] space-y-2">
+                      <span className="text-xs font-black uppercase tracking-wider block border-b border-black pb-1">
+                        [THÔNG TIN NGƯỜI BÁN KHAI BÁO]
+                      </span>
+                      <div className="text-xs space-y-1.5 pt-1">
+                        <div>
+                          <span className="text-neutral-500 block">Tình trạng khai:</span>
+                          <span className="font-bold text-black">
+                            {selectedItem.declaredCondition || "Không khai báo"}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-neutral-500 block">Giá khởi điểm kỳ vọng:</span>
+                          <span className="font-bold text-black text-sm">
+                            ${selectedItem.suggestedStartingPrice?.toFixed(2)}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-neutral-500 block">Mô tả người bán:</span>
+                          <p className="text-neutral-800 text-xs leading-relaxed mt-0.5 line-clamp-3">
+                            {selectedItem.description}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* AI Findings */}
+                    <div className="retro-box p-4 bg-[#fbfbfa] space-y-2">
+                      <span className="text-xs font-black uppercase tracking-wider block border-b border-black pb-1">
+                        [AI GEMINI VISION KẾT LUẬN]
+                      </span>
+                      <div className="text-xs space-y-1.5 pt-1">
+                        <div>
+                          <span className="text-neutral-500 block">Model AI nhận diện:</span>
+                          <span className="font-bold text-black">
+                            {selectedItem.aiReport?.identifiedModel || selectedItem.title}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-neutral-500 block">Tình trạng AI đánh giá:</span>
+                          <span className="font-bold text-black">
+                            {selectedItem.aiReport?.conditionRate || "Chưa có"}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-neutral-500 block">Ước lượng định giá thị trường:</span>
+                          <span className="font-bold text-black text-sm">
+                            ${selectedItem.aiReport?.marketPriceMin?.toFixed(2)} - $
+                            {selectedItem.aiReport?.marketPriceMax?.toFixed(2)}
                           </span>
                         </div>
                       </div>
                     </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Right Detailed Audit Column: 8 cols */}
-            <div className="lg:col-span-8 space-y-6">
-              {/* Top Item Summary & AI Shield */}
-              <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-6">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xs px-2.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/30 font-semibold">
-                        {selectedItem.category?.name}
-                      </span>
-                      <span className="text-xs text-slate-500">
-                        Người bán: <strong className="text-slate-300">{selectedItem.sellerName}</strong>
-                      </span>
-                    </div>
-                    <h2 className="text-xl sm:text-2xl font-black text-white">{selectedItem.title}</h2>
                   </div>
 
-                  {/* Trust Score Hero Badge */}
-                  <div
-                    className={`flex items-center gap-3 p-3 rounded-xl border ${getScoreColor(
-                      selectedItem.aiReport?.trustScore
-                    )}`}
-                  >
-                    <div className="text-right">
-                      <div className="text-[10px] uppercase font-bold tracking-wider opacity-80">
-                        Gemini AI Trust Score
-                      </div>
-                      <div className="text-2xl font-black">
-                        {selectedItem.aiReport?.trustScore ?? 80}
-                        <span className="text-xs font-normal opacity-80">/100</span>
+                  {/* Risk & Authenticity Flags */}
+                  {selectedItem.aiReport?.riskFlags && selectedItem.aiReport.riskFlags.length > 0 && (
+                    <div className="space-y-2 pt-1">
+                      <span className="text-xs font-bold uppercase tracking-wider text-black">
+                        TIÊU CHÍ XÁC THỰC (RISK & AUTHENTICITY FLAGS):
+                      </span>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedItem.aiReport.riskFlags.map((flag, idx) => (
+                          <span key={idx} className="retro-badge bg-white text-black px-2 py-0.5 text-xs">
+                            ✓ {flag.replace(/_/g, " ")}
+                          </span>
+                        ))}
                       </div>
                     </div>
-                    <div className="text-2xl">🛡️</div>
-                  </div>
+                  )}
                 </div>
 
-                {/* Multi-Angle Photo Inspector */}
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">
-                      Thư viện 5 góc ảnh kiểm tra ({selectedItem.images?.length || 0} ảnh)
-                    </span>
+                {/* Moderator Decision Action Box */}
+                <div className="retro-box p-5 bg-white space-y-5">
+                  <h3 className="text-base font-black text-black uppercase flex items-center gap-2 border-b-2 border-black pb-2">
+                    <span>⚖ PHÁN QUYẾT CỦA BAN KIỂM DUYỆT</span>
+                  </h3>
+
+                  {/* Note */}
+                  <div>
+                    <label className="block text-xs font-bold uppercase mb-1">
+                      Ghi chú kiểm duyệt (Moderator Note - Seller sẽ nhận được nội dung này):
+                    </label>
+                    <input
+                      type="text"
+                      value={moderatorNote}
+                      onChange={(e) => setModeratorNote(e.target.value)}
+                      placeholder="VD: Tem mác trùng khớp số serial, hình ảnh góc chụp chuẩn xác, chấp thuận lên sàn."
+                      className="retro-input w-full"
+                    />
+                  </div>
+
+                  {/* Auto launch auction configuration */}
+                  <div className="retro-box p-4 bg-[#fbfbfa] space-y-3">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-bold text-black flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={createAuctionOnApprove}
+                          onChange={(e) => setCreateAuctionOnApprove(e.target.checked)}
+                          className="w-4 h-4 border-2 border-black"
+                        />
+                        <span>TỰ ĐỘNG KÍCH HOẠT PHIÊN ĐẤU GIÁ LÊN SÀN NGAY KHI DUYỆT</span>
+                      </label>
+                      <span className="retro-badge bg-[#fef08a] text-black text-[10px]">KHUYÊN DÙNG</span>
+                    </div>
+
+                    {createAuctionOnApprove && (
+                      <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 pt-2 border-t border-black">
+                        <div>
+                          <span className="text-[10px] font-bold block mb-1">GIÁ KHỞI ĐIỂM ($)</span>
+                          <input
+                            type="number"
+                            value={auctionStartPrice}
+                            onChange={(e) => setAuctionStartPrice(e.target.value)}
+                            className="retro-input w-full text-xs"
+                          />
+                        </div>
+                        <div>
+                          <span className="text-[10px] font-bold block mb-1">BƯỚC GIÁ ($)</span>
+                          <input
+                            type="number"
+                            value={auctionStepPrice}
+                            onChange={(e) => setAuctionStepPrice(e.target.value)}
+                            className="retro-input w-full text-xs"
+                          />
+                        </div>
+                        <div>
+                          <span className="text-[10px] font-bold block mb-1">GIÁ MUA NGAY ($)</span>
+                          <input
+                            type="number"
+                            value={auctionBuyNowPrice}
+                            onChange={(e) => setAuctionBuyNowPrice(e.target.value)}
+                            className="retro-input w-full text-xs"
+                          />
+                        </div>
+                        <div>
+                          <span className="text-[10px] font-bold block mb-1">THỜI LƯỢNG</span>
+                          <select
+                            value={auctionDurationHours}
+                            onChange={(e) => setAuctionDurationHours(Number(e.target.value))}
+                            className="retro-select w-full text-xs"
+                          >
+                            <option value={24}>24 Giờ (1 Ngày)</option>
+                            <option value={48}>48 Giờ (2 Ngày)</option>
+                            <option value={72}>72 Giờ (3 Ngày)</option>
+                            <option value={168}>7 Ngày</option>
+                          </select>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex flex-col sm:flex-row gap-3 pt-2">
                     <button
                       type="button"
-                      onClick={handleReAppraise}
                       disabled={isActionLoading}
-                      className="text-xs text-amber-400 hover:text-amber-300 underline disabled:opacity-50"
+                      onClick={() => handleReviewAction("APPROVED")}
+                      className="retro-btn flex-1 py-3 bg-[#fef08a] font-black text-sm uppercase disabled:opacity-50"
                     >
-                      🔄 Chạy lại Gemini Vision
+                      ✓ PHÊ DUYỆT SẢN PHẨM [APPROVE]
+                    </button>
+
+                    <button
+                      type="button"
+                      disabled={isActionLoading}
+                      onClick={() => handleReviewAction("REJECTED")}
+                      className="retro-btn px-6 py-3 bg-white text-black font-black text-sm uppercase disabled:opacity-50"
+                    >
+                      ✕ TỪ CHỐI [REJECT]
                     </button>
                   </div>
-
-                  {/* Main Large Viewer */}
-                  {selectedAngleImage ? (
-                    <div className="relative h-72 sm:h-96 w-full rounded-xl overflow-hidden border border-slate-800 bg-slate-950 flex items-center justify-center">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={selectedAngleImage}
-                        alt="Audited Angle"
-                        className="w-full h-full object-contain"
-                      />
-                      <span className="absolute bottom-3 left-3 text-xs font-mono px-2.5 py-1 rounded bg-slate-950/80 border border-slate-800 text-amber-400 font-bold">
-                        Góc chụp: {activeAngleTab}
-                      </span>
-                    </div>
-                  ) : (
-                    <div className="h-48 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center text-slate-500 text-xs">
-                      Không có ảnh nào được tải lên
-                    </div>
-                  )}
-
-                  {/* Angle Switcher Tabs */}
-                  {selectedItem.images && selectedItem.images.length > 0 && (
-                    <div className="grid grid-cols-5 gap-2 pt-2">
-                      {selectedItem.images.map((img, idx) => {
-                        const isActive = activeAngleTab === img.angle;
-                        return (
-                          <button
-                            key={idx}
-                            type="button"
-                            onClick={() => handleSelectAngle(img.angle, img.imageUrl)}
-                            className={`p-1.5 rounded-lg border text-left transition ${
-                              isActive
-                                ? "bg-amber-500/20 border-amber-500 text-amber-300"
-                                : "bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700"
-                            }`}
-                          >
-                            <div className="h-12 w-full rounded overflow-hidden bg-slate-900 mb-1">
-                              {/* eslint-disable-next-line @next/next/no-img-element */}
-                              <img src={img.imageUrl} alt={img.angle} className="w-full h-full object-cover" />
-                            </div>
-                            <div className="text-[10px] font-bold truncate">{img.angle}</div>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-
-                {/* Side-by-side: Seller Claims vs AI Findings */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-                  {/* Seller Claim */}
-                  <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
-                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">
-                      Thông Tin Người Bán Khai Báo
-                    </span>
-                    <div className="text-xs space-y-2">
-                      <div>
-                        <span className="text-slate-500 block">Tình trạng khai:</span>
-                        <span className="font-semibold text-white">
-                          {selectedItem.declaredCondition || "Không khai báo"}
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-slate-500 block">Giá khởi điểm kỳ vọng:</span>
-                        <span className="font-semibold text-emerald-400 text-sm">
-                          ${selectedItem.suggestedStartingPrice?.toFixed(2)}
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-slate-500 block">Mô tả người bán:</span>
-                        <p className="text-slate-300 text-xs leading-relaxed mt-0.5 line-clamp-3">
-                          {selectedItem.description}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* AI Gemini Findings */}
-                  <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
-                    <span className="text-xs font-bold text-amber-400 uppercase tracking-wider block">
-                      AI Gemini Vision Kết Luận
-                    </span>
-                    <div className="text-xs space-y-2">
-                      <div>
-                        <span className="text-slate-500 block">Model AI nhận diện:</span>
-                        <span className="font-semibold text-white">
-                          {selectedItem.aiReport?.identifiedModel || selectedItem.title}
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-slate-500 block">Tình trạng AI đánh giá:</span>
-                        <span className="font-semibold text-amber-300">
-                          {selectedItem.aiReport?.conditionRate || "Chưa có"}
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-slate-500 block">Ước lượng định giá thị trường:</span>
-                        <span className="font-bold text-emerald-400 text-sm">
-                          ${selectedItem.aiReport?.marketPriceMin?.toFixed(2)} - $
-                          {selectedItem.aiReport?.marketPriceMax?.toFixed(2)}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Risk Flags */}
-                {selectedItem.aiReport?.riskFlags && selectedItem.aiReport.riskFlags.length > 0 && (
-                  <div className="space-y-2">
-                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-                      Các tiêu chí xác thực (Risk & Authenticity Flags):
-                    </span>
-                    <div className="flex flex-wrap gap-2">
-                      {selectedItem.aiReport.riskFlags.map((flag, idx) => (
-                        <span
-                          key={idx}
-                          className="px-2.5 py-1 rounded-md text-xs font-medium bg-slate-950 border border-slate-800 text-slate-300"
-                        >
-                          ✓ {flag.replace(/_/g, " ")}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Moderator Decision Action Box */}
-              <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-6">
-                <h3 className="text-base font-bold text-white flex items-center gap-2">
-                  <span>⚖️ Phán Quyết Của Ban Kiểm Duyệt</span>
-                </h3>
-
-                {/* Note */}
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-2">
-                    Ghi chú kiểm duyệt (Moderator Note - Seller sẽ nhận được nội dung này):
-                  </label>
-                  <input
-                    type="text"
-                    value={moderatorNote}
-                    onChange={(e) => setModeratorNote(e.target.value)}
-                    placeholder="VD: Đã đối soát tem mác trùng khớp số serial, hình ảnh rõ nét, chấp thuận lên sàn."
-                    className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-amber-500 focus:outline-none text-white text-sm"
-                  />
-                </div>
-
-                {/* Auto launch auction configuration */}
-                <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-4">
-                  <div className="flex items-center justify-between">
-                    <label className="text-xs font-bold text-white flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={createAuctionOnApprove}
-                        onChange={(e) => setCreateAuctionOnApprove(e.target.checked)}
-                        className="w-4 h-4 rounded text-amber-500 bg-slate-900 border-slate-700 focus:ring-0"
-                      />
-                      <span>Tự động kích hoạt & tạo phiên đấu giá lên sàn ngay khi Duyệt</span>
-                    </label>
-                    <span className="text-[11px] text-amber-400 font-semibold">Khuyên dùng</span>
-                  </div>
-
-                  {createAuctionOnApprove && (
-                    <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 pt-2 border-t border-slate-800/80">
-                      <div>
-                        <span className="text-[10px] text-slate-500 block mb-1">Giá khởi điểm ($)</span>
-                        <input
-                          type="number"
-                          value={auctionStartPrice}
-                          onChange={(e) => setAuctionStartPrice(e.target.value)}
-                          className="w-full px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-xs text-white"
-                        />
-                      </div>
-                      <div>
-                        <span className="text-[10px] text-slate-500 block mb-1">Bước giá ($)</span>
-                        <input
-                          type="number"
-                          value={auctionStepPrice}
-                          onChange={(e) => setAuctionStepPrice(e.target.value)}
-                          className="w-full px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-xs text-white"
-                        />
-                      </div>
-                      <div>
-                        <span className="text-[10px] text-slate-500 block mb-1">Giá mua ngay ($)</span>
-                        <input
-                          type="number"
-                          value={auctionBuyNowPrice}
-                          onChange={(e) => setAuctionBuyNowPrice(e.target.value)}
-                          className="w-full px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-xs text-white"
-                        />
-                      </div>
-                      <div>
-                        <span className="text-[10px] text-slate-500 block mb-1">Thời lượng (Giờ)</span>
-                        <select
-                          value={auctionDurationHours}
-                          onChange={(e) => setAuctionDurationHours(Number(e.target.value))}
-                          className="w-full px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-xs text-white"
-                        >
-                          <option value={24}>24 Giờ (1 Ngày)</option>
-                          <option value={48}>48 Giờ (2 Ngày)</option>
-                          <option value={72}>72 Giờ (3 Ngày)</option>
-                          <option value={168}>7 Ngày</option>
-                        </select>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Action Buttons */}
-                <div className="flex flex-col sm:flex-row gap-3 pt-2">
-                  <button
-                    type="button"
-                    disabled={isActionLoading}
-                    onClick={() => handleReviewAction("APPROVED")}
-                    className="flex-1 py-3.5 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-slate-950 font-bold rounded-xl transition shadow-lg hover:shadow-emerald-500/20 flex items-center justify-center gap-2"
-                  >
-                    <span>✓ Phê Duyệt Sản Phẩm (Approve)</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    disabled={isActionLoading}
-                    onClick={() => handleReviewAction("REJECTED")}
-                    className="px-6 py-3.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30 font-bold rounded-xl transition flex items-center justify-center gap-2"
-                  >
-                    <span>✕ Từ Chối (Reject)</span>
-                  </button>
                 </div>
               </div>
             </div>
-          </div>
-        )}
-      </main>
+          )}
+        </div>
+      </div>
 
-      <footer className="border-t border-slate-900 py-6 text-center text-xs text-slate-500">
-        &copy; 2026 VeryBid Moderation Protocol. Concurrency & Multi-Angle Verification Authority.
+      <footer className="py-4 text-center text-xs text-neutral-600">
+        ✿ 2026 VERYBID AI-OS MODERATION PROTOCOL • CONCURRENCY & MULTI-ANGLE VERIFICATION ✿
       </footer>
     </div>
   );

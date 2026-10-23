@@ -34,34 +34,47 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col justify-center items-center px-4 sm:px-6 lg:px-8 text-slate-100">
-      <div className="w-full max-w-md space-y-8 bg-slate-900/80 backdrop-blur-md p-8 rounded-2xl border border-slate-800 shadow-2xl">
-        <div className="text-center">
-          <Link href="/" className="inline-block text-3xl font-black tracking-wider text-amber-500">
-            VERY<span className="text-slate-100">BID</span>
-          </Link>
-          <h2 className="mt-4 text-2xl font-bold tracking-tight text-white">
-            Welcome back
-          </h2>
-          <p className="mt-2 text-sm text-slate-400">
-            Sign in to participate in rare collectibles auctions
-          </p>
+    <div className="min-h-screen py-10 px-4 flex flex-col justify-center items-center">
+      <div className="retro-window w-full max-w-md">
+        {/* Titlebar */}
+        <div className="retro-titlebar">
+          <div className="flex items-center gap-2">
+            <span className="font-black text-black">VERYBID_LOGIN.EXE</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <button className="retro-btn py-0 px-2 text-xs">_</button>
+            <button className="retro-btn py-0 px-2 text-xs">□</button>
+            <Link href="/" className="retro-btn py-0 px-2 text-xs font-bold">✕</Link>
+          </div>
         </div>
 
-        {error && (
-          <div className="p-3 text-sm text-red-400 bg-red-950/50 border border-red-800 rounded-lg">
-            {error}
+        {/* Content */}
+        <div className="p-6 bg-white space-y-6">
+          <div className="text-center space-y-1 border-b-2 border-black pb-4">
+            <Link href="/" className="inline-block text-3xl font-black tracking-wider text-black">
+              ✿ VERYBID ✿
+            </Link>
+            <h2 className="text-lg font-bold text-black uppercase">
+              XÁC THỰC NGƯỜI DÙNG HỆ THỐNG
+            </h2>
+            <p className="text-xs text-neutral-600">
+              Đăng nhập để tham gia đấu giá vật phẩm sưu tầm quý hiếm
+            </p>
           </div>
-        )}
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="space-y-4">
+          {error && (
+            <div className="retro-box p-3 bg-[#fef2f2] text-xs font-bold text-black">
+              ⚠ LỖI: {error}
+            </div>
+          )}
+
+          <form className="space-y-4" onSubmit={handleSubmit}>
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-slate-300 mb-1"
+                className="block text-xs font-bold text-black uppercase mb-1"
               >
-                Email Address
+                Tài khoản Email:
               </label>
               <input
                 id="email"
@@ -71,16 +84,16 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="collector@example.com"
-                className="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition"
+                className="retro-input w-full"
               />
             </div>
 
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-slate-300 mb-1"
+                className="block text-xs font-bold text-black uppercase mb-1"
               >
-                Password
+                Mật mã đăng nhập:
               </label>
               <input
                 id="password"
@@ -90,29 +103,31 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition"
+                className="retro-input w-full"
               />
             </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="retro-btn bg-[#fef08a] w-full py-2.5 font-black uppercase text-sm mt-4 disabled:opacity-50"
+            >
+              {loading ? "[ĐANG XÁC THỰC...]" : "▶ ĐĂNG NHẬP HỆ THỐNG"}
+            </button>
+          </form>
+
+          <div className="pt-2 border-t-2 border-black flex flex-col items-center gap-2 text-xs">
+            <p className="text-neutral-600">
+              Chưa có tài khoản đấu giá?{" "}
+              <Link href="/auth/register" className="font-bold underline text-black">
+                [ĐĂNG KÝ NGAY]
+              </Link>
+            </p>
+            <Link href="/" className="text-neutral-500 hover:text-black">
+              ← Quay lại Sàn Đấu Giá
+            </Link>
           </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3 px-4 bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold rounded-lg shadow-lg hover:shadow-amber-500/20 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-          >
-            {loading ? "Signing in..." : "Sign In"}
-          </button>
-        </form>
-
-        <p className="text-center text-sm text-slate-400">
-          Don&apos;t have an account?{" "}
-          <Link
-            href="/auth/register"
-            className="font-medium text-amber-500 hover:text-amber-400 transition"
-          >
-            Create one now
-          </Link>
-        </p>
+        </div>
       </div>
     </div>
   );

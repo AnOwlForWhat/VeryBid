@@ -1,27 +1,244 @@
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --background: #ededec;
+  --foreground: #000000;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  color: #000000;
+  background: #ededec;
+  font-family: 'VT323', monospace;
+  font-size: 20px;
+  line-height: 1.35;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+/* Subtle retro scanlines (without green tint) */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(transparent 50%, rgba(0, 0, 0, 0.02) 50%);
+  background-size: 100% 4px;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* Retro Window Container */
+.retro-window {
+  border: 3px solid #000000;
+  background: #ffffff;
+  box-shadow: 5px 5px 0px #000000;
+  margin: 16px auto;
+  position: relative;
+}
+
+/* Retro System Titlebar */
+.retro-titlebar {
+  background: #e4e4e2;
+  border-bottom: 2px solid #000000;
+  padding: 6px 12px;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Retro Card / Box */
+.retro-box {
+  border: 2px solid #000000;
+  background: #ffffff;
+  box-shadow: 2px 2px 0px #000000;
+  transition: all 0.15s ease;
+}
+
+.retro-box:hover {
+  box-shadow: 3px 3px 0px #000000;
+}
+
+/* Retro Buttons */
+.retro-btn {
+  border: 2px solid #000000;
+  background: #ffffff;
+  color: #000000;
+  font-family: 'VT323', monospace;
+  font-size: 19px;
+  padding: 4px 14px;
+  cursor: pointer;
+  box-shadow: 2px 2px 0px #000000;
+  transition: all 0.1s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-decoration: none;
+}
+
+.retro-btn:hover {
+  background: #f2f2ef;
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0px #000000;
+}
+
+.retro-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0px 0px 0px #000000;
+}
+
+.retro-btn-primary {
+  background: #facc15;
+}
+
+.retro-btn-primary:hover {
+  background: #eab308;
+}
+
+.retro-btn-dark {
+  background: #000000;
+  color: #ffffff;
+}
+
+.retro-btn-dark:hover {
+  background: #262626;
+  color: #ffffff;
+}
+
+.retro-btn-danger {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.retro-btn-danger:hover {
+  background: #fecaca;
+}
+
+.retro-btn-success {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.retro-btn-success:hover {
+  background: #bbf7d0;
+}
+
+/* Retro Inputs */
+.retro-input {
+  border: 2px solid #000000;
+  background: #ffffff;
+  color: #000000;
+  font-family: 'VT323', monospace;
+  font-size: 19px;
+  padding: 6px 10px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.retro-input:focus {
+  box-shadow: 2px 2px 0px #000000;
+  background: #fffdf5;
+}
+
+/* Retro Select */
+.retro-select {
+  border: 2px solid #000000;
+  background: #ffffff;
+  color: #000000;
+  font-family: 'VT323', monospace;
+  font-size: 19px;
+  padding: 6px 10px;
+  outline: none;
+}
+
+/* Retro Badge / Chip */
+.retro-badge {
+  border: 1px solid #000000;
+  background: #f5f5f3;
+  color: #000000;
+  padding: 1px 8px;
+  font-size: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Retro Progress Bar */
+.retro-progress {
+  border: 2px solid #000000;
+  background: #ffffff;
+  height: 18px;
+  position: relative;
+  overflow: hidden;
+}
+
+.retro-progress-fill {
+  background: #000000;
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+/* Status Indicator Dot */
+.status-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 5px;
+  border: 1px solid #000;
+}
+
+.status-dot-online {
+  background: #22c55e;
+}
+
+.status-dot-busy {
+  background: #f59e0b;
+}
+
+.status-dot-offline {
+  background: #ef4444;
+}
+
+/* Click-Me Interactive Box */
+.retro-click-box {
+  border: 2px dashed #000000;
+  background: #ffffff;
+  padding: 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.retro-click-box:hover {
+  background: #fafaf7;
+  transform: scale(1.02);
+}
+
+/* Scrollbar retro styling */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #eee;
+  border-left: 2px solid #000;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border: 2px solid #000;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #aaa;
 }

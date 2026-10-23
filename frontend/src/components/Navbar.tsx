@@ -1,90 +1,117 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 
 export function Navbar() {
   const { user, isAuthenticated, isLoading, logout } = useAuth();
+  const [uptimeSeconds, setUptimeSeconds] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setUptimeSeconds((prev) => prev + 1);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const formatUptime = (total: number) => {
+    const hrs = Math.floor(total / 3600).toString().padStart(2, "0");
+    const mins = Math.floor((total % 3600) / 60).toString().padStart(2, "0");
+    const secs = (total % 60).toString().padStart(2, "0");
+    return `${hrs}:${mins}:${secs}`;
+  };
 
   return (
-    <header className="border-b border-slate-800 bg-slate-900/70 backdrop-blur-md sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        <div className="flex items-center gap-8">
-          <Link href="/" className="text-2xl font-black tracking-wider text-amber-500 hover:opacity-90 transition">
-            VERY<span className="text-slate-100">BID</span>
+    <header className="border-b-[3px] border-black bg-white">
+      {/* 1. Classic Retro Titlebar */}
+      <div className="retro-titlebar text-sm sm:text-base">
+        <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
+          <Link href="/" className="font-bold text-lg mr-2 hover:underline">
+            VERYBID.EXE
           </Link>
-          <nav className="hidden md:flex items-center gap-6">
-            <Link
-              href="/auctions"
-              className="text-sm font-medium text-slate-300 hover:text-amber-400 transition"
-            >
-              Sàn Đấu Giá
-            </Link>
-            <Link
-              href="/sell"
-              className="text-sm font-medium text-slate-300 hover:text-amber-400 transition flex items-center gap-1.5"
-            >
-              <span>Đăng Bán & Thẩm Định</span>
-              <span className="text-[10px] px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30 font-semibold">
-                AI
-              </span>
-            </Link>
-            <Link
-              href="/moderator"
-              className="text-sm font-medium text-slate-300 hover:text-amber-400 transition flex items-center gap-1.5"
-            >
-              <span>Ban Kiểm Duyệt</span>
-              <span className="text-[10px] px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-semibold">
-                Admin
-              </span>
-            </Link>
-          </nav>
+
+          <Link href="/auctions" className="retro-btn py-0.5 px-2 text-sm bg-white">
+            File: Sàn Đấu Giá
+          </Link>
+          <Link href="/sell" className="retro-btn py-0.5 px-2 text-sm bg-white">
+            Tool: Đăng Bán (AI)
+          </Link>
+          <Link href="/moderator" className="retro-btn py-0.5 px-2 text-sm bg-white">
+            Card: Ban Kiểm Duyệt
+          </Link>
+          <a
+            href="https://github.com/AnOwlForWhat/VeryBid"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="retro-btn py-0.5 px-2 text-sm bg-white hidden md:inline-flex"
+          >
+            Help: Mã Nguồn
+          </a>
         </div>
 
-        <div className="flex items-center gap-4">
-          {isLoading ? (
-            <span className="text-xs text-slate-400">Loading...</span>
-          ) : isAuthenticated && user ? (
-            <div className="flex items-center gap-4">
-              <Link
-                href="/sell"
-                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-slate-950 bg-amber-500 hover:bg-amber-400 rounded-lg shadow transition"
-              >
-                <span>+ Đăng Bán</span>
+        {/* Right Titlebar Info */}
+        <div className="flex items-center gap-3 text-xs sm:text-sm">
+          <div className="hidden sm:flex items-center gap-1 border border-black px-2 py-0.5 bg-white">
+            <span className="status-dot status-dot-online"></span>
+            <span>SYSTEM: ONLINE</span>
+          </div>
+
+          <div className="hidden md:block border border-black px-2 py-0.5 bg-white font-mono text-xs">
+            UPTIME: {formatUptime(uptimeSeconds)}
+          </div>
+        </div>
+      </div>
+
+      {/* 2. Header Identity Box (Inspired by owl-root) */}
+      <div className="p-3 sm:p-4 bg-white flex flex-col md:flex-row items-start md:items-center justify-between gap-3 border-b-2 border-black">
+        <div className="flex items-center gap-3">
+          <div className="text-3xl sm:text-4xl select-none">✿</div>
+          <div>
+            <div className="flex items-center gap-2">
+              <Link href="/" className="text-2xl sm:text-3xl font-bold tracking-tight hover:underline">
+                VERYBID
               </Link>
-              <div className="text-right hidden sm:block">
-                <p className="text-sm font-semibold text-white">{user.fullName}</p>
-                <p className="text-xs text-amber-400">
-                  Wallet: ${user.balance?.toFixed(2) ?? "0.00"} • Rep: {user.reputationScore}
-                </p>
+              <span className="retro-badge text-xs bg-yellow-200 font-bold border-black">
+                v2.4 AI-OS
+              </span>
+            </div>
+            <div className="text-sm sm:text-base text-gray-700">
+              &ldquo;Collectibles &amp; Rare Items Verified by Multimodal AI &amp; Soft-Close Protocol&rdquo;
+            </div>
+          </div>
+        </div>
+
+        {/* User Account / Session Actions */}
+        <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end pt-2 md:pt-0 border-t md:border-t-0 border-gray-200">
+          {isLoading ? (
+            <span className="text-sm">Loading session...</span>
+          ) : isAuthenticated && user ? (
+            <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+              <div className="text-right border border-black bg-gray-50 px-2 py-1 text-xs sm:text-sm">
+                <div>
+                  User: <strong>{user.fullName}</strong>
+                </div>
+                <div className="text-amber-800">
+                  Wallet: <strong>${user.balance?.toFixed(2) ?? "0.00"}</strong> • Rep: {user.reputationScore}
+                </div>
               </div>
-              <button
-                onClick={logout}
-                className="px-3 py-1.5 text-xs sm:text-sm font-medium text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-lg transition"
-              >
-                Logout
+
+              <Link href="/sell" className="retro-btn retro-btn-primary text-sm font-bold">
+                + Đăng Bán
+              </Link>
+
+              <button onClick={logout} className="retro-btn retro-btn-danger text-sm font-bold">
+                Thoát
               </button>
             </div>
           ) : (
-            <div className="flex items-center gap-3">
-              <Link
-                href="/sell"
-                className="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-amber-400 hover:text-amber-300 border border-amber-500/30 rounded-lg transition"
-              >
-                Đăng Bán
+            <div className="flex items-center gap-2">
+              <Link href="/auth/login" className="retro-btn text-sm">
+                Đăng Nhập
               </Link>
-              <Link
-                href="/auth/login"
-                className="px-3.5 py-1.5 text-sm font-medium text-slate-200 hover:text-white transition"
-              >
-                Sign In
-              </Link>
-              <Link
-                href="/auth/register"
-                className="px-4 py-1.5 text-sm font-semibold text-slate-950 bg-amber-500 hover:bg-amber-400 rounded-lg shadow-md hover:shadow-amber-500/20 transition"
-              >
-                Get Started
+              <Link href="/auth/register" className="retro-btn retro-btn-primary text-sm font-bold">
+                Đăng Ký
               </Link>
             </div>
           )}

@@ -22,12 +22,12 @@ export default function RegisterPage() {
     setError(null);
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match");
+      setError("Mật khẩu xác nhận không trùng khớp");
       return;
     }
 
     if (password.length < 8) {
-      setError("Password must be at least 8 characters");
+      setError("Mật khẩu phải chứa ít nhất 8 ký tự");
       return;
     }
 
@@ -45,7 +45,7 @@ export default function RegisterPage() {
       if (err instanceof Error) {
         setError(err.message);
       } else {
-        setError("Registration failed");
+        setError("Đăng ký tài khoản thất bại");
       }
     } finally {
       setLoading(false);
@@ -53,139 +53,156 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col justify-center items-center px-4 sm:px-6 lg:px-8 text-slate-100 py-12">
-      <div className="w-full max-w-md space-y-8 bg-slate-900/80 backdrop-blur-md p-8 rounded-2xl border border-slate-800 shadow-2xl">
-        <div className="text-center">
-          <Link href="/" className="inline-block text-3xl font-black tracking-wider text-amber-500">
-            VERY<span className="text-slate-100">BID</span>
-          </Link>
-          <h2 className="mt-4 text-2xl font-bold tracking-tight text-white">
-            Create an Account
-          </h2>
-          <p className="mt-2 text-sm text-slate-400">
-            Join the verified collectibles auction community
-          </p>
+    <div className="min-h-screen py-10 px-4 flex flex-col justify-center items-center">
+      <div className="retro-window w-full max-w-md">
+        {/* Titlebar */}
+        <div className="retro-titlebar">
+          <div className="flex items-center gap-2">
+            <span className="font-black text-black">VERYBID_REGISTER.EXE</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <button className="retro-btn py-0 px-2 text-xs">_</button>
+            <button className="retro-btn py-0 px-2 text-xs">□</button>
+            <Link href="/" className="retro-btn py-0 px-2 text-xs font-bold">✕</Link>
+          </div>
         </div>
 
-        {error && (
-          <div className="p-3 text-sm text-red-400 bg-red-950/50 border border-red-800 rounded-lg">
-            {error}
+        {/* Content */}
+        <div className="p-6 bg-white space-y-5">
+          <div className="text-center space-y-1 border-b-2 border-black pb-4">
+            <Link href="/" className="inline-block text-3xl font-black tracking-wider text-black">
+              ✿ VERYBID ✿
+            </Link>
+            <h2 className="text-lg font-bold text-black uppercase">
+              ĐĂNG KÝ THÀNH VIÊN MỚI
+            </h2>
+            <p className="text-xs text-neutral-600">
+              Gia nhập cộng đồng đấu giá & thẩm định số 1
+            </p>
           </div>
-        )}
 
-        <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
-          <div>
-            <label
-              htmlFor="fullName"
-              className="block text-sm font-medium text-slate-300 mb-1"
+          {error && (
+            <div className="retro-box p-3 bg-[#fef2f2] text-xs font-bold text-black">
+              ⚠ LỖI: {error}
+            </div>
+          )}
+
+          <form className="space-y-3" onSubmit={handleSubmit}>
+            <div>
+              <label
+                htmlFor="fullName"
+                className="block text-xs font-bold text-black uppercase mb-1"
+              >
+                Họ và Tên:
+              </label>
+              <input
+                id="fullName"
+                name="fullName"
+                type="text"
+                required
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                placeholder="Nguyễn Văn A"
+                className="retro-input w-full"
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="email"
+                className="block text-xs font-bold text-black uppercase mb-1"
+              >
+                Địa chỉ Email:
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="collector@example.com"
+                className="retro-input w-full"
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="phone"
+                className="block text-xs font-bold text-black uppercase mb-1"
+              >
+                Số Điện Thoại (Tùy chọn):
+              </label>
+              <input
+                id="phone"
+                name="phone"
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="0901 234 567"
+                className="retro-input w-full"
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="password"
+                className="block text-xs font-bold text-black uppercase mb-1"
+              >
+                Mật khẩu (Tối thiểu 8 ký tự):
+              </label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                className="retro-input w-full"
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="confirmPassword"
+                className="block text-xs font-bold text-black uppercase mb-1"
+              >
+                Xác nhận Mật khẩu:
+              </label>
+              <input
+                id="confirmPassword"
+                name="confirmPassword"
+                type="password"
+                required
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="••••••••"
+                className="retro-input w-full"
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="retro-btn bg-[#fef08a] w-full py-2.5 font-black uppercase text-sm mt-3 disabled:opacity-50"
             >
-              Full Name
-            </label>
-            <input
-              id="fullName"
-              name="fullName"
-              type="text"
-              required
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              placeholder="Nguyen Van A"
-              className="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition"
-            />
+              {loading ? "[ĐANG TẠO TÀI KHOẢN...]" : "▶ HOÀN TẤT ĐĂNG KÝ"}
+            </button>
+          </form>
+
+          <div className="pt-2 border-t-2 border-black flex flex-col items-center gap-2 text-xs">
+            <p className="text-neutral-600">
+              Đã có tài khoản?{" "}
+              <Link href="/auth/login" className="font-bold underline text-black">
+                [ĐĂNG NHẬP]
+              </Link>
+            </p>
+            <Link href="/" className="text-neutral-500 hover:text-black">
+              ← Quay lại Sàn Đấu Giá
+            </Link>
           </div>
-
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-slate-300 mb-1"
-            >
-              Email Address
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="collector@example.com"
-              className="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition"
-            />
-          </div>
-
-          <div>
-            <label
-              htmlFor="phone"
-              className="block text-sm font-medium text-slate-300 mb-1"
-            >
-              Phone Number (Optional)
-            </label>
-            <input
-              id="phone"
-              name="phone"
-              type="tel"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="+84 901 234 567"
-              className="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition"
-            />
-          </div>
-
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-slate-300 mb-1"
-            >
-              Password
-            </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="At least 8 characters"
-              className="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition"
-            />
-          </div>
-
-          <div>
-            <label
-              htmlFor="confirmPassword"
-              className="block text-sm font-medium text-slate-300 mb-1"
-            >
-              Confirm Password
-            </label>
-            <input
-              id="confirmPassword"
-              name="confirmPassword"
-              type="password"
-              required
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="Repeat your password"
-              className="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition"
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3 px-4 bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold rounded-lg shadow-lg hover:shadow-amber-500/20 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-          >
-            {loading ? "Creating Account..." : "Create Account"}
-          </button>
-        </form>
-
-        <p className="text-center text-sm text-slate-400">
-          Already have an account?{" "}
-          <Link
-            href="/auth/login"
-            className="font-medium text-amber-500 hover:text-amber-400 transition"
-          >
-            Sign in
-          </Link>
-        </p>
+        </div>
       </div>
     </div>
   );

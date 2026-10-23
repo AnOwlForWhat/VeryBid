@@ -7,6 +7,7 @@ interface CountdownTimerProps {
   isUpcoming?: boolean;
   onExpire?: () => void;
   compact?: boolean;
+  className?: string;
 }
 
 export function CountdownTimer({
@@ -14,6 +15,7 @@ export function CountdownTimer({
   isUpcoming = false,
   onExpire,
   compact = false,
+  className = "",
 }: CountdownTimerProps) {
   const [timeLeft, setTimeLeft] = useState<{
     days: number;
@@ -50,8 +52,8 @@ export function CountdownTimer({
 
   if (timeLeft.totalMs <= 0) {
     return (
-      <span className="text-slate-400 font-medium">
-        {isUpcoming ? "Starting soon..." : "Auction Closed"}
+      <span className={`font-bold text-neutral-600 ${className}`}>
+        {isUpcoming ? "[SẮP MỞ PHIÊN]" : "[ĐÃ ĐÓNG PHIÊN]"}
       </span>
     );
   }
@@ -69,9 +71,9 @@ export function CountdownTimer({
 
     return (
       <span
-        className={`font-mono font-semibold ${
-          isUrgent ? "text-rose-400 animate-pulse" : "text-amber-400"
-        }`}
+        className={`font-mono font-bold ${
+          isUrgent ? "text-red-600 animate-pulse" : "text-black"
+        } ${className}`}
       >
         {parts.join(" ")}
       </span>
@@ -79,36 +81,36 @@ export function CountdownTimer({
   }
 
   return (
-    <div className="flex items-center gap-2 font-mono">
+    <div className={`flex items-center gap-1.5 font-mono ${className}`}>
       {timeLeft.days > 0 && (
-        <div className="flex flex-col items-center bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1 min-w-[50px]">
-          <span className="text-xl font-bold text-white">{timeLeft.days}</span>
-          <span className="text-[10px] text-slate-400 uppercase tracking-wider">Days</span>
+        <div className="flex flex-col items-center bg-white border-2 border-black px-2 py-0.5 min-w-[44px]">
+          <span className="text-xl font-black text-black leading-tight">{timeLeft.days}</span>
+          <span className="text-[10px] text-neutral-600 uppercase font-bold">Ngày</span>
         </div>
       )}
-      <div className="flex flex-col items-center bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1 min-w-[50px]">
-        <span className="text-xl font-bold text-white">
+      <div className="flex flex-col items-center bg-white border-2 border-black px-2 py-0.5 min-w-[44px]">
+        <span className="text-xl font-black text-black leading-tight">
           {String(timeLeft.hours).padStart(2, "0")}
         </span>
-        <span className="text-[10px] text-slate-400 uppercase tracking-wider">Hours</span>
+        <span className="text-[10px] text-neutral-600 uppercase font-bold">Giờ</span>
       </div>
-      <span className="text-slate-500 font-bold">:</span>
-      <div className="flex flex-col items-center bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1 min-w-[50px]">
-        <span className="text-xl font-bold text-white">
+      <span className="text-black font-black">:</span>
+      <div className="flex flex-col items-center bg-white border-2 border-black px-2 py-0.5 min-w-[44px]">
+        <span className="text-xl font-black text-black leading-tight">
           {String(timeLeft.minutes).padStart(2, "0")}
         </span>
-        <span className="text-[10px] text-slate-400 uppercase tracking-wider">Mins</span>
+        <span className="text-[10px] text-neutral-600 uppercase font-bold">Phút</span>
       </div>
-      <span className="text-slate-500 font-bold">:</span>
+      <span className="text-black font-black">:</span>
       <div
-        className={`flex flex-col items-center bg-slate-900 border rounded-lg px-2.5 py-1 min-w-[50px] ${
-          isUrgent ? "border-rose-500 bg-rose-500/10 text-rose-400" : "border-slate-800 text-white"
+        className={`flex flex-col items-center border-2 border-black px-2 py-0.5 min-w-[44px] ${
+          isUrgent ? "bg-[#fef2f2] text-red-600" : "bg-white text-black"
         }`}
       >
-        <span className={`text-xl font-bold ${isUrgent ? "text-rose-400 animate-pulse" : "text-white"}`}>
+        <span className={`text-xl font-black leading-tight ${isUrgent ? "animate-pulse text-red-600" : "text-black"}`}>
           {String(timeLeft.seconds).padStart(2, "0")}
         </span>
-        <span className="text-[10px] text-slate-400 uppercase tracking-wider">Secs</span>
+        <span className="text-[10px] text-neutral-600 uppercase font-bold">Giây</span>
       </div>
     </div>
   );
