@@ -1,244 +1,343 @@
-@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --background: #ededec;
-  --foreground: #000000;
+  --background: #FAF9F5;
+  --foreground: #1F1E1D;
+  --surface: #FFFFFF;
+  --border: #E5E4DE;
+  --terracotta: #D97757;
+  --terracotta-hover: #C46445;
 }
 
 body {
-  color: #000000;
-  background: #ededec;
-  font-family: 'VT323', monospace;
-  font-size: 20px;
-  line-height: 1.35;
+  color: #1F1E1D;
+  background-color: #FAF9F5;
+  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
   margin: 0;
   padding: 0;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Subtle retro scanlines (without green tint) */
-body::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(transparent 50%, rgba(0, 0, 0, 0.02) 50%);
-  background-size: 100% 4px;
-  pointer-events: none;
-  z-index: 9999;
+/* ==========================================================================
+   Claude Light Mode Core Component Styles
+   ========================================================================== */
+
+/* Modern Claude Card */
+.claude-card {
+  background-color: #FFFFFF;
+  border: 1px solid #E5E4DE;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Retro Window Container */
-.retro-window {
-  border: 3px solid #000000;
-  background: #ffffff;
-  box-shadow: 5px 5px 0px #000000;
-  margin: 16px auto;
-  position: relative;
+.claude-card:hover {
+  border-color: #D5D3CC;
+  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.06);
 }
 
-/* Retro System Titlebar */
-.retro-titlebar {
-  background: #e4e4e2;
-  border-bottom: 2px solid #000000;
-  padding: 6px 12px;
-  font-weight: bold;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-/* Retro Card / Box */
-.retro-box {
-  border: 2px solid #000000;
-  background: #ffffff;
-  box-shadow: 2px 2px 0px #000000;
-  transition: all 0.15s ease;
-}
-
-.retro-box:hover {
-  box-shadow: 3px 3px 0px #000000;
-}
-
-/* Retro Buttons */
-.retro-btn {
-  border: 2px solid #000000;
-  background: #ffffff;
-  color: #000000;
-  font-family: 'VT323', monospace;
-  font-size: 19px;
-  padding: 4px 14px;
-  cursor: pointer;
-  box-shadow: 2px 2px 0px #000000;
-  transition: all 0.1s ease;
+/* Claude Buttons */
+.claude-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 8px;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.4;
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: all 0.15s ease;
+  cursor: pointer;
   text-decoration: none;
+  white-space: nowrap;
 }
 
-.retro-btn:hover {
-  background: #f2f2ef;
-  transform: translate(1px, 1px);
-  box-shadow: 1px 1px 0px #000000;
+.claude-btn-primary {
+  background-color: #D97757;
+  color: #FFFFFF;
+  border: 1px solid #D97757;
+  box-shadow: 0 1px 2px rgba(217, 119, 87, 0.2);
 }
 
-.retro-btn:active {
-  transform: translate(2px, 2px);
-  box-shadow: 0px 0px 0px #000000;
+.claude-btn-primary:hover {
+  background-color: #C46445;
+  border-color: #C46445;
+  box-shadow: 0 2px 4px rgba(217, 119, 87, 0.3);
 }
 
-.retro-btn-primary {
-  background: #facc15;
+.claude-btn-primary:active {
+  background-color: #B35537;
+  transform: translateY(1px);
 }
 
-.retro-btn-primary:hover {
-  background: #eab308;
+.claude-btn-secondary {
+  background-color: #FFFFFF;
+  color: #1F1E1D;
+  border: 1px solid #E5E4DE;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
 }
 
-.retro-btn-dark {
-  background: #000000;
-  color: #ffffff;
+.claude-btn-secondary:hover {
+  background-color: #F7F6F2;
+  border-color: #D5D3CC;
 }
 
-.retro-btn-dark:hover {
-  background: #262626;
-  color: #ffffff;
+.claude-btn-ghost {
+  background-color: transparent;
+  color: #6B6A66;
+  border: 1px solid transparent;
 }
 
-.retro-btn-danger {
-  background: #fee2e2;
-  color: #991b1b;
+.claude-btn-ghost:hover {
+  background-color: #F0EFEA;
+  color: #1F1E1D;
 }
 
-.retro-btn-danger:hover {
-  background: #fecaca;
+.claude-btn-danger {
+  background-color: #FEE2E2;
+  color: #991B1B;
+  border: 1px solid #FECACA;
 }
 
-.retro-btn-success {
-  background: #dcfce7;
-  color: #166534;
+.claude-btn-danger:hover {
+  background-color: #FCA5A5;
 }
 
-.retro-btn-success:hover {
-  background: #bbf7d0;
-}
-
-/* Retro Inputs */
-.retro-input {
-  border: 2px solid #000000;
-  background: #ffffff;
-  color: #000000;
-  font-family: 'VT323', monospace;
-  font-size: 19px;
-  padding: 6px 10px;
+/* Claude Inputs & Form Elements */
+.claude-input {
+  width: 100%;
+  background-color: #FFFFFF;
+  border: 1px solid #E5E4DE;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 14px;
+  color: #1F1E1D;
   outline: none;
-  box-sizing: border-box;
+  transition: all 0.15s ease;
 }
 
-.retro-input:focus {
-  box-shadow: 2px 2px 0px #000000;
-  background: #fffdf5;
+.claude-input:focus {
+  border-color: #D97757;
+  box-shadow: 0 0 0 3px rgba(217, 119, 87, 0.12);
 }
 
-/* Retro Select */
-.retro-select {
-  border: 2px solid #000000;
-  background: #ffffff;
-  color: #000000;
-  font-family: 'VT323', monospace;
-  font-size: 19px;
-  padding: 6px 10px;
-  outline: none;
+.claude-input::placeholder {
+  color: #9E9D96;
 }
 
-/* Retro Badge / Chip */
-.retro-badge {
-  border: 1px solid #000000;
-  background: #f5f5f3;
-  color: #000000;
-  padding: 1px 8px;
-  font-size: 16px;
+/* Claude Badges */
+.claude-badge {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.2;
 }
 
-/* Retro Progress Bar */
-.retro-progress {
-  border: 2px solid #000000;
-  background: #ffffff;
-  height: 18px;
-  position: relative;
-  overflow: hidden;
+.claude-badge-subtle {
+  background-color: #F0EFEA;
+  color: #575653;
+  border: 1px solid #E5E4DE;
 }
 
-.retro-progress-fill {
-  background: #000000;
-  height: 100%;
-  transition: width 0.3s ease;
+.claude-badge-terracotta {
+  background-color: #FBF3F0;
+  color: #B35537;
+  border: 1px solid #F5D3C8;
+}
+
+.claude-badge-success {
+  background-color: #DCFCE7;
+  color: #166534;
+  border: 1px solid #BBF7D0;
+}
+
+.claude-badge-warning {
+  background-color: #FEF3C7;
+  color: #92400E;
+  border: 1px solid #FDE68A;
 }
 
 /* Status Indicator Dot */
 .status-dot {
-  width: 9px;
-  height: 9px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   display: inline-block;
-  margin-right: 5px;
-  border: 1px solid #000;
 }
 
 .status-dot-online {
-  background: #22c55e;
+  background-color: #16A34A;
+  box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.2);
 }
 
 .status-dot-busy {
-  background: #f59e0b;
+  background-color: #D97706;
 }
 
 .status-dot-offline {
-  background: #ef4444;
+  background-color: #DC2626;
 }
 
-/* Click-Me Interactive Box */
+/* ==========================================================================
+   Backward Compatibility Aliases (Upgraded to Claude Light Aesthetic)
+   ========================================================================== */
+
+.retro-window {
+  background-color: #FFFFFF;
+  border: 1px solid #E5E4DE;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+  margin: 16px auto;
+  overflow: hidden;
+}
+
+.retro-titlebar {
+  background-color: #FBFBF9;
+  border-bottom: 1px solid #E5E4DE;
+  padding: 10px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: #6B6A66;
+}
+
+.retro-box {
+  background-color: #FFFFFF;
+  border: 1px solid #E5E4DE;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.03);
+  transition: all 0.2s ease;
+}
+
+.retro-box:hover {
+  border-color: #D5D3CC;
+  box-shadow: 0 4px 10px -2px rgba(0, 0, 0, 0.05);
+}
+
+.retro-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1px solid #E5E4DE;
+  background-color: #FFFFFF;
+  color: #1F1E1D;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-decoration: none;
+}
+
+.retro-btn:hover {
+  background-color: #F7F6F2;
+  border-color: #D5D3CC;
+}
+
+.retro-btn-primary {
+  background-color: #D97757;
+  color: #FFFFFF;
+  border-color: #D97757;
+}
+
+.retro-btn-primary:hover {
+  background-color: #C46445;
+  border-color: #C46445;
+  color: #FFFFFF;
+}
+
+.retro-btn-dark {
+  background-color: #1F1E1D;
+  color: #FFFFFF;
+  border-color: #1F1E1D;
+}
+
+.retro-btn-dark:hover {
+  background-color: #363532;
+  color: #FFFFFF;
+}
+
+.retro-btn-danger {
+  background-color: #FEE2E2;
+  color: #991B1B;
+  border-color: #FECACA;
+}
+
+.retro-btn-danger:hover {
+  background-color: #FCA5A5;
+}
+
+.retro-input {
+  border: 1px solid #E5E4DE;
+  border-radius: 8px;
+  background-color: #FFFFFF;
+  color: #1F1E1D;
+  padding: 8px 12px;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.15s ease;
+}
+
+.retro-input:focus {
+  border-color: #D97757;
+  box-shadow: 0 0 0 3px rgba(217, 119, 87, 0.12);
+}
+
+.retro-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid #E5E4DE;
+  background-color: #F7F6F2;
+  color: #1F1E1D;
+}
+
 .retro-click-box {
-  border: 2px dashed #000000;
-  background: #ffffff;
-  padding: 16px;
+  border: 1px dashed #D5D3CC;
+  border-radius: 12px;
+  background-color: #FAF9F5;
+  padding: 20px;
   text-align: center;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
 }
 
 .retro-click-box:hover {
-  background: #fafaf7;
-  transform: scale(1.02);
+  border-color: #D97757;
+  background-color: #FBF3F0;
 }
 
-/* Scrollbar retro styling */
+/* Modern clean scrollbar */
 ::-webkit-scrollbar {
-  width: 12px;
-  height: 12px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #eee;
-  border-left: 2px solid #000;
+  background: #FAF9F5;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #ccc;
-  border: 2px solid #000;
+  background: #D5D3CC;
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #aaa;
+  background: #B8B6AF;
 }
