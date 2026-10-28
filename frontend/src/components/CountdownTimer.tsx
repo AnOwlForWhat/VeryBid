@@ -52,8 +52,8 @@ export function CountdownTimer({
 
   if (timeLeft.totalMs <= 0) {
     return (
-      <span className={`font-bold text-neutral-600 ${className}`}>
-        {isUpcoming ? "[SẮP MỞ PHIÊN]" : "[ĐÃ ĐÓNG PHIÊN]"}
+      <span className={`font-semibold text-xs px-2 py-0.5 rounded bg-[#F0EFEA] text-[#6B6A66] ${className}`}>
+        {isUpcoming ? "Sắp mở phiên" : "Đã kết thúc"}
       </span>
     );
   }
@@ -71,11 +71,11 @@ export function CountdownTimer({
 
     return (
       <span
-        className={`font-mono font-bold ${
-          isUrgent ? "text-red-600 animate-pulse" : "text-black"
+        className={`font-mono text-xs font-semibold ${
+          isUrgent ? "text-[#DC2626] animate-pulse" : "text-[#1F1E1D]"
         } ${className}`}
       >
-        {parts.join(" ")}
+        ⏱️ {parts.join(" ")}
       </span>
     );
   }
@@ -83,34 +83,36 @@ export function CountdownTimer({
   return (
     <div className={`flex items-center gap-1.5 font-mono ${className}`}>
       {timeLeft.days > 0 && (
-        <div className="flex flex-col items-center bg-white border-2 border-black px-2 py-0.5 min-w-[44px]">
-          <span className="text-xl font-black text-black leading-tight">{timeLeft.days}</span>
-          <span className="text-[10px] text-neutral-600 uppercase font-bold">Ngày</span>
+        <div className="flex flex-col items-center bg-white border border-[#E5E4DE] rounded-lg px-2 py-1 min-w-[42px] shadow-sm">
+          <span className="text-lg font-bold text-[#1F1E1D] leading-tight">{timeLeft.days}</span>
+          <span className="text-[9px] text-[#6B6A66] uppercase font-semibold">Ngày</span>
         </div>
       )}
-      <div className="flex flex-col items-center bg-white border-2 border-black px-2 py-0.5 min-w-[44px]">
-        <span className="text-xl font-black text-black leading-tight">
+      <div className="flex flex-col items-center bg-white border border-[#E5E4DE] rounded-lg px-2 py-1 min-w-[42px] shadow-sm">
+        <span className="text-lg font-bold text-[#1F1E1D] leading-tight">
           {String(timeLeft.hours).padStart(2, "0")}
         </span>
-        <span className="text-[10px] text-neutral-600 uppercase font-bold">Giờ</span>
+        <span className="text-[9px] text-[#6B6A66] uppercase font-semibold">Giờ</span>
       </div>
-      <span className="text-black font-black">:</span>
-      <div className="flex flex-col items-center bg-white border-2 border-black px-2 py-0.5 min-w-[44px]">
-        <span className="text-xl font-black text-black leading-tight">
+      <span className="text-[#9E9D96] font-bold">:</span>
+      <div className="flex flex-col items-center bg-white border border-[#E5E4DE] rounded-lg px-2 py-1 min-w-[42px] shadow-sm">
+        <span className="text-lg font-bold text-[#1F1E1D] leading-tight">
           {String(timeLeft.minutes).padStart(2, "0")}
         </span>
-        <span className="text-[10px] text-neutral-600 uppercase font-bold">Phút</span>
+        <span className="text-[9px] text-[#6B6A66] uppercase font-semibold">Phút</span>
       </div>
-      <span className="text-black font-black">:</span>
+      <span className="text-[#9E9D96] font-bold">:</span>
       <div
-        className={`flex flex-col items-center border-2 border-black px-2 py-0.5 min-w-[44px] ${
-          isUrgent ? "bg-[#fef2f2] text-red-600" : "bg-white text-black"
+        className={`flex flex-col items-center border rounded-lg px-2 py-1 min-w-[42px] shadow-sm ${
+          isUrgent ? "bg-[#FEE2E2] border-[#FECACA] text-[#DC2626]" : "bg-white border-[#E5E4DE] text-[#1F1E1D]"
         }`}
       >
-        <span className={`text-xl font-black leading-tight ${isUrgent ? "animate-pulse text-red-600" : "text-black"}`}>
+        <span className={`text-lg font-bold leading-tight ${isUrgent ? "animate-pulse text-[#DC2626]" : "text-[#1F1E1D]"}`}>
           {String(timeLeft.seconds).padStart(2, "0")}
         </span>
-        <span className="text-[10px] text-neutral-600 uppercase font-bold">Giây</span>
+        <span className={`text-[9px] uppercase font-semibold ${isUrgent ? "text-[#DC2626]" : "text-[#6B6A66]"}`}>
+          Giây
+        </span>
       </div>
     </div>
   );

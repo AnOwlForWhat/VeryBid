@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { Navbar } from "@/components/Navbar";
 import { CountdownTimer } from "@/components/CountdownTimer";
+import { AuthModal } from "@/components/AuthModal";
 import { auctionApi } from "@/services/auctionApi";
 import { useAuctionWebSocket } from "@/hooks/useAuctionWebSocket";
 import { useAuth } from "@/context/AuthContext";
@@ -26,6 +27,7 @@ export default function LiveAuctionRoomPage() {
   const [actionSuccessMessage, setActionSuccessMessage] = useState<string | null>(null);
   const [softCloseNotification, setSoftCloseNotification] = useState<string | null>(null);
   const [priceFlash, setPriceFlash] = useState<boolean>(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
 
   // Load auction details
   const loadAuction = useCallback(async () => {
@@ -133,7 +135,7 @@ export default function LiveAuctionRoomPage() {
     setActionSuccessMessage(null);
 
     if (!isAuthenticated) {
-      setErrorMessage("Vui lòng đăng nhập trước khi tham gia đấu thầu.");
+      setIsAuthModalOpen(true);
       return;
     }
 
@@ -165,7 +167,7 @@ export default function LiveAuctionRoomPage() {
   // Buy It Now instant settlement
   const handleBuyNow = async () => {
     if (!isAuthenticated) {
-      setErrorMessage("Vui lòng đăng nhập để thực hiện Mua Ngay.");
+      setIsAuthModalOpen(true);
       return;
     }
 
@@ -446,6 +448,20 @@ export default function LiveAuctionRoomPage() {
                       </div>
                     ) : (
                       <>
+                        {/* Guest Preview Notice */}
+                        {!isAuthenticated && (
+                          <div className="p-2.5 rounded-lg bg-[#FAF9F5] border border-[#E5E4DE] text-xs text-[#6B6A66] flex items-center justify-between">
+                            <span>💡 Bạn đang xem trước phòng đấu giá.</span>
+                            <button
+                              type="button"
+                              onClick={() => setIsAuthModalOpen(true)}
+                              className="text-xs font-semibold text-[#D97757] hover:underline"
+                            >
+                              Đăng nhập để đặt giá →
+                            </button>
+                          </div>
+                        )}
+
                         {/* Quick increment buttons */}
                         <div>
                           <span className="text-xs font-bold text-gray-600 block mb-1">
@@ -566,6 +582,14 @@ export default function LiveAuctionRoomPage() {
           </div>
         </main>
       </div>
+
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        title="Đăng Nhập Để Tham Gia Đấu Giá"
+        description="Vui lòng đăng nhập tài khoản để gửi giá đấu hoặc mua ngay vật phẩm này."
+        onSuccess={() => loadAuction()}
+      />
     </div>
   );
 }
