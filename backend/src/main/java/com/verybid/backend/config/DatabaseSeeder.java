@@ -446,5 +446,113 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .bids(new ArrayList<>())
                 .build();
         auctionRepository.save(charizardAuction);
+
+        // =========================================================================
+        // ITEM 7: APPROVED + ENDED AUCTION (Historical Result - Yesterday)
+        // 1955 Leica M3 Double Stroke Rangefinder
+        // =========================================================================
+        Item leicaItem = Item.builder()
+                .seller(seller)
+                .category(vintageCat)
+                .title("1955 Leica M3 Double Stroke with 50mm Summicron f/2 Lens")
+                .description("Legendary rangefinder camera with early serial number #703421. Pristine vulcanite covering, smooth shutter speeds and crystal clear viewfinder.")
+                .declaredCondition("Museum Grade 98%")
+                .suggestedStartingPrice(new BigDecimal("1800.00"))
+                .status(ItemStatus.APPROVED)
+                .images(new ArrayList<>())
+                .build();
+
+        leicaItem.getImages().addAll(List.of(
+                ItemImage.builder().item(leicaItem).imageUrl("https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=1000&q=80").angle(ImageAngle.FRONT).isThumbnail(true).build(),
+                ItemImage.builder().item(leicaItem).imageUrl("https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=1000&q=80").angle(ImageAngle.BACK).isThumbnail(false).build(),
+                ItemImage.builder().item(leicaItem).imageUrl("https://images.unsplash.com/photo-1518770660439-4636190af475?w=1000&q=80").angle(ImageAngle.SERIAL_NUMBER).isThumbnail(false).build()
+        ));
+        Item savedLeica = itemRepository.save(leicaItem);
+
+        ItemAIReport leicaReport = ItemAIReport.builder()
+                .item(savedLeica)
+                .identifiedModel("1955 Leica M3 DS Wetzlar")
+                .conditionRate("9.8/10 (Collector Grade)")
+                .marketPriceMin(new BigDecimal("2400.00"))
+                .marketPriceMax(new BigDecimal("3500.00"))
+                .suggestedStartPrice(new BigDecimal("1800.00"))
+                .riskFlags("SERIAL_NUMBER_VERIFIED,VULCANITE_INTACT,RANGEFINDER_ALIGNED")
+                .trustScore(98)
+                .moderatorNote("Phê duyệt: Máy nguyên bản, cơ chế double stroke mượt mà.")
+                .build();
+        itemAIReportRepository.save(leicaReport);
+        savedLeica.setAiReport(leicaReport);
+
+        Auction leicaAuction = Auction.builder()
+                .item(savedLeica)
+                .startPrice(new BigDecimal("1800.00"))
+                .stepPrice(new BigDecimal("50.00"))
+                .buyNowPrice(new BigDecimal("3200.00"))
+                .currentPrice(new BigDecimal("2850.00"))
+                .currentWinner(bidder)
+                .startTime(now.minusDays(3))
+                .endTime(now.minusDays(1).withHour(18).withMinute(30))
+                .status(AuctionStatus.ENDED)
+                .bids(new ArrayList<>())
+                .build();
+        Auction savedLeicaAuction = auctionRepository.save(leicaAuction);
+
+        Bid lb1 = Bid.builder().auction(savedLeicaAuction).bidder(bidder).bidAmount(new BigDecimal("2200.00")).isAutoBid(false).createdAt(now.minusDays(2)).build();
+        Bid lb2 = Bid.builder().auction(savedLeicaAuction).bidder(bidder).bidAmount(new BigDecimal("2850.00")).isAutoBid(false).createdAt(now.minusDays(1).withHour(18).withMinute(28)).build();
+        bidRepository.saveAll(List.of(lb1, lb2));
+
+        // =========================================================================
+        // ITEM 8: APPROVED + ENDED AUCTION (Historical Result - 2 Days Ago)
+        // Air Jordan 1 High 1985 Chicago OG
+        // =========================================================================
+        Item jordanItem = Item.builder()
+                .seller(seller)
+                .category(categories.get("rare-sneakers"))
+                .title("Air Jordan 1 High OG 1985 Chicago Original Release (Size 10.5)")
+                .description("Holy grail of sneaker history. Original 1985 Korean factory production with authentic collars and original box. Leather aged to vintage perfection.")
+                .declaredCondition("Collector Grade 90%")
+                .suggestedStartingPrice(new BigDecimal("7000.00"))
+                .status(ItemStatus.APPROVED)
+                .images(new ArrayList<>())
+                .build();
+
+        jordanItem.getImages().addAll(List.of(
+                ItemImage.builder().item(jordanItem).imageUrl("https://images.unsplash.com/photo-1552346154-21d32810aba3?w=1000&q=80").angle(ImageAngle.FRONT).isThumbnail(true).build(),
+                ItemImage.builder().item(jordanItem).imageUrl("https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?w=1000&q=80").angle(ImageAngle.BACK).isThumbnail(false).build(),
+                ItemImage.builder().item(jordanItem).imageUrl("https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=1000&q=80").angle(ImageAngle.SERIAL_NUMBER).isThumbnail(false).build()
+        ));
+        Item savedJordan = itemRepository.save(jordanItem);
+
+        ItemAIReport jordanReport = ItemAIReport.builder()
+                .item(savedJordan)
+                .identifiedModel("1985 Nike Air Jordan 1 OG Chicago")
+                .conditionRate("9.5/10 (Deadstock / Vintage Preservation)")
+                .marketPriceMin(new BigDecimal("9000.00"))
+                .marketPriceMax(new BigDecimal("15000.00"))
+                .suggestedStartPrice(new BigDecimal("7000.00"))
+                .riskFlags("PRODUCTION_STAMP_VERIFIED,COLLAR_FOAM_INSPECTED,WINGS_LOGO_EMBOSSED")
+                .trustScore(99)
+                .moderatorNote("Phê duyệt: Đôi 1985 chuẩn xác, form da nguyên bản.")
+                .build();
+        itemAIReportRepository.save(jordanReport);
+        savedJordan.setAiReport(jordanReport);
+
+        Auction jordanAuction = Auction.builder()
+                .item(savedJordan)
+                .startPrice(new BigDecimal("7000.00"))
+                .stepPrice(new BigDecimal("250.00"))
+                .buyNowPrice(new BigDecimal("15000.00"))
+                .currentPrice(new BigDecimal("11500.00"))
+                .currentWinner(bidder)
+                .startTime(now.minusDays(4))
+                .endTime(now.minusDays(2).withHour(20).withMinute(0))
+                .status(AuctionStatus.ENDED)
+                .bids(new ArrayList<>())
+                .build();
+        Auction savedJordanAuction = auctionRepository.save(jordanAuction);
+
+        Bid jb1 = Bid.builder().auction(savedJordanAuction).bidder(bidder).bidAmount(new BigDecimal("8500.00")).isAutoBid(false).createdAt(now.minusDays(3)).build();
+        Bid jb2 = Bid.builder().auction(savedJordanAuction).bidder(bidder).bidAmount(new BigDecimal("11500.00")).isAutoBid(false).createdAt(now.minusDays(2).withHour(19).withMinute(55)).build();
+        bidRepository.saveAll(List.of(jb1, jb2));
     }
 }

@@ -4,6 +4,8 @@ import React, { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { CountdownTimer } from "@/components/CountdownTimer";
+import { AuctionTimelineBar } from "@/components/AuctionTimelineBar";
+import { HistoricalAuctionResultCard } from "@/components/HistoricalAuctionResultCard";
 import { auctionApi } from "@/services/auctionApi";
 import { Auction, AuctionStatus, Category, PageResponse } from "@/types/auction";
 
@@ -11,7 +13,8 @@ export default function AuctionCatalogPage() {
   const [auctions, setAuctions] = useState<Auction[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
-  const [selectedStatus, setSelectedStatus] = useState<AuctionStatus | "ALL">("ACTIVE");
+  const [selectedStatus, setSelectedStatus] = useState<AuctionStatus | "ALL">("ALL");
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [searchKeyword, setSearchKeyword] = useState<string>("");
   const [page, setPage] = useState<number>(0);
   const [pagination, setPagination] = useState<PageResponse<Auction> | null>(null);
@@ -31,7 +34,7 @@ export default function AuctionCatalogPage() {
     fetchCategories();
   }, []);
 
-  // Fetch auctions
+  // Fetch auctions with optional date filter
   const loadAuctions = useCallback(async () => {
     setIsLoading(true);
     setErrorMessage(null);
@@ -40,6 +43,7 @@ export default function AuctionCatalogPage() {
         status: selectedStatus === "ALL" ? undefined : selectedStatus,
         categoryId: selectedCategory ?? undefined,
         keyword: searchKeyword.trim() ? searchKeyword.trim() : undefined,
+        date: selectedDate ?? undefined,
         page,
         size: 9,
       });
@@ -50,12 +54,12 @@ export default function AuctionCatalogPage() {
       if (err instanceof Error) {
         setErrorMessage(err.message);
       } else {
-        setErrorMessage("An unexpected error occurred while fetching auctions.");
+        setErrorMessage("Lỗi kết nối khi tải danh sách phiên đấu giá.");
       }
     } finally {
       setIsLoading(false);
     }
-  }, [selectedStatus, selectedCategory, searchKeyword, page]);
+  }, [selectedStatus, selectedCategory, searchKeyword, selectedDate, page]);
 
   useEffect(() => {
     loadAuctions();
@@ -67,31 +71,47 @@ export default function AuctionCatalogPage() {
     loadAuctions();
   };
 
+  const handleSelectTimelineDate = (date: string | null) => {
+    setSelectedDate(date);
+    setPage(0);
+
+    // If picking a past date, default status to ENDED if currently ACTIVE
+    if (date) {
+      const picked = new Date(date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      if (picked < today && selectedStatus === "ACTIVE") {
+        setSelectedStatus("ENDED");
+      }
+    }
+  };
+
   const getStatusBadge = (status: AuctionStatus) => {
     switch (status) {
       case "ACTIVE":
         return (
-          <span className="retro-badge bg-emerald-100 text-emerald-900 border-black font-bold">
+          <span className="claude-badge claude-badge-success text-[11px]">
             <span className="status-dot status-dot-online"></span>
-            LIVE NOW
+            ĐANG ĐẤU GIÁ
           </span>
         );
       case "UPCOMING":
         return (
-          <span className="retro-badge bg-blue-100 text-blue-900 border-black font-bold">
+          <span className="claude-badge claude-badge-warning text-[11px]">
             <span className="status-dot status-dot-busy"></span>
-            UPCOMING
+            SẮP MỞ
           </span>
         );
       case "ENDED":
         return (
-          <span className="retro-badge bg-gray-200 text-gray-700 border-black">
-            ENDED
+          <span className="claude-badge bg-[#1F1E1D] text-white text-[11px] font-bold">
+            ✓ ĐÃ GÕ BÚA
           </span>
         );
       default:
         return (
-          <span className="retro-badge bg-gray-100 border-black font-mono">
+          <span className="claude-badge claude-badge-subtle text-[11px]">
             {status}
           </span>
         );
@@ -99,287 +119,405 @@ export default function AuctionCatalogPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#ededec] flex flex-col justify-between p-2 sm:p-4">
-      {/* Outer Retro Window */}
-      <div className="retro-window max-w-6xl mx-auto w-full">
-        <Navbar />
+    <div className="min-h-screen bg-[#FAF9F5] text-[#1F1E1D] flex flex-col justify-between">
+      <Navbar />
 
-        <main className="p-4 sm:p-6">
-          {/* Header Bar */}
-          <div className="retro-box p-4 mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <div className="text-xs uppercase font-bold text-gray-600 mb-0.5">
-                DATABASE: AUCTIONS_TABLE • REAL-TIME CATALOG
-              </div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-                Sàn Đấu Giá Vật Phẩm Sưu Tầm & Hàng Hiếm
-              </h1>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 w-full space-y-6">
+        {/* Page Top Header Bar */}
+        <div className="p-6 bg-white border border-[#E5E4DE] rounded-2xl shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#D97757] mb-1">
+              <span>🏛️</span> SÀN ĐẤU GIÁ VẬT PHẨM SƯU TẦM
             </div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#1F1E1D]">
+              Kho Đấu Giá Trực Tiếp & Lịch Sử Kết Quả
+            </h1>
+            <p className="text-xs sm:text-sm text-[#6B6A66] mt-1 max-w-2xl leading-relaxed">
+              Theo dõi diễn biến thời gian thực, đặt giá bảo chứng bởi AI hoặc tra cứu kết quả các phiên đã gõ búa trong lịch sử.
+            </p>
+          </div>
 
-            <Link href="/sell" className="retro-btn retro-btn-primary font-bold">
-              + Đăng Bán Sản Phẩm (AI Thẩm Định)
+          <div className="flex items-center gap-3">
+            <Link
+              href="/sell"
+              className="claude-btn claude-btn-primary font-semibold text-xs py-2.5 px-4 shadow-sm"
+            >
+              + Đăng Bán Sản Phẩm
             </Link>
           </div>
+        </div>
 
-          {/* Search & Filter Bar */}
-          <div className="retro-box p-4 mb-6 space-y-4 bg-gray-50">
-            {/* Search Input */}
-            <form onSubmit={handleSearchSubmit} className="flex gap-2">
+        {/* 1. Auction Date Timeline Bar (Thanh lịch trình ngày đấu giá) */}
+        <AuctionTimelineBar
+          selectedDate={selectedDate}
+          onSelectDate={handleSelectTimelineDate}
+        />
+
+        {/* 2. Search, Status Tabs & Category Filters Bar */}
+        <div className="p-4 sm:p-5 bg-white border border-[#E5E4DE] rounded-2xl shadow-sm space-y-4">
+          {/* Keyword Search Input */}
+          <form onSubmit={handleSearchSubmit} className="flex gap-2">
+            <div className="relative flex-1">
+              <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#9E9D96]">
+                🔍
+              </span>
               <input
                 type="text"
-                placeholder="Nhập tên mô hình, dòng máy vintage, sneaker cần tìm..."
+                placeholder="Tìm theo tên mô hình, dòng máy vintage, sneaker, đồng hồ, tranh nghệ thuật..."
                 value={searchKeyword}
                 onChange={(e) => setSearchKeyword(e.target.value)}
-                className="retro-input flex-1"
+                className="claude-input pl-9"
               />
-              <button type="submit" className="retro-btn retro-btn-primary font-bold">
-                Tìm Kiếm
-              </button>
-              {searchKeyword && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSearchKeyword("");
-                    setPage(0);
-                  }}
-                  className="retro-btn bg-white"
-                >
-                  Xóa
-                </button>
-              )}
-            </form>
-
-            {/* Status Tabs */}
-            <div className="flex flex-wrap gap-2 pt-2 border-t border-gray-300">
-              <span className="text-sm font-bold self-center mr-2">Trạng thái:</span>
-              {(["ALL", "ACTIVE", "UPCOMING", "ENDED"] as const).map((status) => (
-                <button
-                  key={status}
-                  onClick={() => {
-                    setSelectedStatus(status);
-                    setPage(0);
-                  }}
-                  className={`retro-btn text-sm ${
-                    selectedStatus === status
-                      ? "retro-btn-dark font-bold"
-                      : "bg-white"
-                  }`}
-                >
-                  {status === "ALL"
-                    ? "Tất cả"
-                    : status === "ACTIVE"
-                    ? "🔴 Đang diễn ra"
-                    : status === "UPCOMING"
-                    ? "⏳ Sắp diễn ra"
-                    : "Đã kết thúc"}
-                </button>
-              ))}
             </div>
-
-            {/* Category Filter Pills */}
-            <div className="flex flex-wrap gap-2 pt-2 border-t border-gray-300">
-              <span className="text-sm font-bold self-center mr-2">Danh mục:</span>
+            <button type="submit" className="claude-btn claude-btn-primary text-xs px-4 font-semibold">
+              Tìm Kiếm
+            </button>
+            {searchKeyword && (
               <button
+                type="button"
                 onClick={() => {
-                  setSelectedCategory(null);
+                  setSearchKeyword("");
                   setPage(0);
                 }}
-                className={`retro-btn text-sm ${
-                  selectedCategory === null
-                    ? "retro-btn-dark font-bold"
-                    : "bg-white"
+                className="claude-btn claude-btn-secondary text-xs px-3"
+              >
+                Xóa
+              </button>
+            )}
+          </form>
+
+          {/* Status Tabs Switcher */}
+          <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-[#E5E4DE]">
+            <span className="text-xs font-semibold text-[#6B6A66] mr-1">Chế độ xem:</span>
+            {(
+              [
+                { key: "ALL", label: "Tất cả phiên" },
+                { key: "ACTIVE", label: "🔴 Đang diễn ra" },
+                { key: "ENDED", label: "🏆 Kết quả đã chốt (Historical)" },
+                { key: "UPCOMING", label: "⏳ Sắp diễn ra" },
+              ] as const
+            ).map((tab) => (
+              <button
+                key={tab.key}
+                type="button"
+                onClick={() => {
+                  setSelectedStatus(tab.key);
+                  setPage(0);
+                }}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                  selectedStatus === tab.key
+                    ? "bg-[#1F1E1D] text-white shadow-sm"
+                    : "bg-[#F5F5F0] text-[#6B6A66] hover:bg-[#EAE8E1] hover:text-[#1F1E1D]"
                 }`}
               >
-                Tất cả danh mục
+                {tab.label}
               </button>
-              {categories.map((cat) => (
-                <button
-                  key={cat.id}
-                  onClick={() => {
-                    setSelectedCategory(cat.id);
-                    setPage(0);
-                  }}
-                  className={`retro-btn text-sm ${
-                    selectedCategory === cat.id
-                      ? "retro-btn-dark font-bold"
-                      : "bg-white"
-                  }`}
-                >
-                  {cat.name}
-                </button>
-              ))}
-            </div>
+            ))}
           </div>
 
-          {/* Auction Cards Grid */}
-          {isLoading ? (
-            <div className="text-center py-20 retro-box">
-              <div className="text-3xl mb-2 font-mono">⌛ [ LOADING CATALOG DATA... ]</div>
-              <p className="text-sm text-gray-600">Đang đồng bộ dữ liệu phiên đấu giá từ máy chủ...</p>
-            </div>
-          ) : errorMessage ? (
-            <div className="retro-box p-6 text-center bg-rose-50 border-rose-600">
-              <div className="font-bold text-rose-700 text-lg mb-1">Lỗi tải dữ liệu</div>
-              <p className="text-sm mb-4">{errorMessage}</p>
-              <button onClick={loadAuctions} className="retro-btn">
-                Thử Lại
-              </button>
-            </div>
-          ) : auctions.length === 0 ? (
-            <div className="retro-box p-12 text-center bg-white">
-              <div className="text-4xl mb-2">🔍</div>
-              <h3 className="text-xl font-bold mb-1">Không Tìm Thấy Phiên Đấu Giá Nào</h3>
-              <p className="text-sm text-gray-600 max-w-md mx-auto mb-4">
-                Không có món đồ nào khớp với bộ lọc hiện tại. Thử đổi danh mục hoặc từ khóa tìm kiếm.
-              </p>
+          {/* Category Filter Pills */}
+          <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-[#E5E4DE]">
+            <span className="text-xs font-semibold text-[#6B6A66] mr-1">Danh mục:</span>
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedCategory(null);
+                setPage(0);
+              }}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                selectedCategory === null
+                  ? "bg-[#D97757] text-white shadow-sm font-semibold"
+                  : "bg-[#F5F5F0] text-[#6B6A66] hover:bg-[#EAE8E1] hover:text-[#1F1E1D]"
+              }`}
+            >
+              Tất cả danh mục
+            </button>
+            {categories.map((cat) => (
               <button
+                key={cat.id}
+                type="button"
                 onClick={() => {
+                  setSelectedCategory(cat.id);
+                  setPage(0);
+                }}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                  selectedCategory === cat.id
+                    ? "bg-[#D97757] text-white shadow-sm font-semibold"
+                    : "bg-[#F5F5F0] text-[#6B6A66] hover:bg-[#EAE8E1] hover:text-[#1F1E1D]"
+                }`}
+              >
+                {cat.name}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* 3. Filter Stats Bar */}
+        <div className="flex items-center justify-between text-xs text-[#6B6A66] px-1">
+          <div>
+            Tìm thấy <strong className="text-[#1F1E1D]">{pagination?.totalElements ?? auctions.length}</strong> phiên đấu giá
+            {selectedDate && (
+              <span>
+                {" "}cho ngày <strong className="text-[#D97757]">{selectedDate}</strong>
+              </span>
+            )}
+            {selectedStatus === "ENDED" && <span> • 🏆 Danh sách kết quả gõ búa</span>}
+          </div>
+
+          {(selectedDate || selectedCategory !== null || selectedStatus !== "ALL" || searchKeyword) && (
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedDate(null);
+                setSelectedCategory(null);
+                setSelectedStatus("ALL");
+                setSearchKeyword("");
+                setPage(0);
+              }}
+              className="text-xs text-[#D97757] hover:underline font-semibold"
+            >
+              Đặt lại tất cả bộ lọc
+            </button>
+          )}
+        </div>
+
+        {/* 4. Main Auction Grid or Historical Results Cards */}
+        {isLoading ? (
+          <div className="py-24 text-center bg-white border border-[#E5E4DE] rounded-2xl">
+            <div className="inline-block animate-spin text-2xl mb-2">⌛</div>
+            <div className="text-sm font-semibold text-[#1F1E1D]">Đang tải dữ liệu phiên đấu giá...</div>
+            <p className="text-xs text-[#6B6A66] mt-1">Đồng bộ tỷ giá và lịch trình thời gian thực</p>
+          </div>
+        ) : errorMessage ? (
+          <div className="p-8 text-center bg-[#FEE2E2] border border-[#FECACA] rounded-2xl">
+            <div className="font-bold text-[#991B1B] text-base mb-1">Không thể tải dữ liệu</div>
+            <p className="text-xs text-[#991B1B] mb-4">{errorMessage}</p>
+            <button onClick={loadAuctions} className="claude-btn claude-btn-secondary text-xs">
+              Thử Lại
+            </button>
+          </div>
+        ) : auctions.length === 0 ? (
+          <div className="py-16 text-center bg-white border border-[#E5E4DE] rounded-2xl p-6 space-y-3">
+            <div className="text-4xl mb-1">🔍</div>
+            <h3 className="text-base font-bold text-[#1F1E1D]">
+              {selectedStatus === "ENDED"
+                ? "Không có kết quả đấu giá nào trong ngày đã chọn"
+                : "Không tìm thấy phiên đấu giá nào phù hợp"}
+            </h3>
+            <p className="text-xs text-[#6B6A66] max-w-md mx-auto leading-relaxed">
+              {selectedDate
+                ? `Ngày ${selectedDate} hiện không có phiên nào khớp với bộ lọc. Bạn có thể chọn ngày khác trên thanh lịch trình hoặc xem tất cả.`
+                : "Thử thay đổi từ khóa tìm kiếm hoặc chọn danh mục khác."}
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedDate(null);
                   setSelectedCategory(null);
                   setSelectedStatus("ALL");
                   setSearchKeyword("");
                   setPage(0);
                 }}
-                className="retro-btn retro-btn-primary"
+                className="claude-btn claude-btn-primary text-xs"
               >
-                Đặt Lại Bộ Lọc
+                Xem Tất Cả Các Ngày
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const today = new Date();
+                  const y = today.getFullYear();
+                  const m = String(today.getMonth() + 1).padStart(2, "0");
+                  const d = String(today.getDate()).padStart(2, "0");
+                  handleSelectTimelineDate(`${y}-${m}-${d}`);
+                }}
+                className="claude-btn claude-btn-secondary text-xs"
+              >
+                Xem Phiên Hôm Nay
               </button>
             </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {auctions.map((auction) => {
-                const thumbnail =
-                  auction.item?.images?.find((img) => img.isThumbnail)?.imageUrl ||
-                  auction.item?.images?.[0]?.imageUrl ||
-                  "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&q=80";
-
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {auctions.map((auction) => {
+              // If auction is ENDED, render the specialized Historical Result Card
+              if (auction.status === "ENDED") {
                 return (
-                  <div
+                  <HistoricalAuctionResultCard
                     key={auction.id}
-                    className="retro-box flex flex-col justify-between overflow-hidden bg-white"
-                  >
-                    {/* Top Thumbnail Box */}
-                    <div>
-                      <div className="relative aspect-[4/3] bg-gray-100 border-b-2 border-black overflow-hidden">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={thumbnail}
-                          alt={auction.item?.title ?? "Auction Item"}
-                          className="w-full h-full object-cover"
-                        />
-                        <div className="absolute top-2 left-2">
-                          {getStatusBadge(auction.status)}
-                        </div>
+                    auction={auction}
+                  />
+                );
+              }
 
-                        {auction.item?.category && (
-                          <div className="absolute top-2 right-2">
-                            <span className="retro-badge bg-white font-bold text-xs">
-                              {auction.item.category.name}
-                            </span>
-                          </div>
-                        )}
+              // Otherwise, render live interactive card
+              const thumbnail =
+                auction.item?.images?.find((img) => img.isThumbnail)?.imageUrl ||
+                auction.item?.images?.[0]?.imageUrl ||
+                "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&q=80";
 
-                        {auction.item?.aiReport && (
-                          <div className="absolute bottom-2 left-2">
-                            <span className="retro-badge bg-emerald-100 text-emerald-950 font-bold text-xs">
-                              🛡️ {auction.item.aiReport.trustScore}/100 AI VERIFIED
-                            </span>
-                          </div>
-                        )}
+              return (
+                <div
+                  key={auction.id}
+                  className="claude-card flex flex-col justify-between overflow-hidden group"
+                >
+                  {/* Top Thumbnail Box */}
+                  <div>
+                    <div className="relative aspect-[4/3] bg-[#F5F5F0] overflow-hidden border-b border-[#E5E4DE]">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={thumbnail}
+                        alt={auction.item?.title ?? "Vật phẩm đấu giá"}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
 
-                        {auction.buyNowPrice && auction.status === "ACTIVE" && (
-                          <div className="absolute bottom-2 right-2">
-                            <span className="retro-badge bg-yellow-300 font-bold text-xs">
-                              Buyout: ${auction.buyNowPrice.toLocaleString()}
-                            </span>
-                          </div>
-                        )}
+                      {/* Top Badges */}
+                      <div className="absolute top-2.5 left-2.5">
+                        {getStatusBadge(auction.status)}
                       </div>
 
-                      {/* Content Details */}
-                      <div className="p-4">
-                        <div className="flex items-center justify-between text-xs text-gray-600 mb-1">
-                          <span className="font-bold border border-black px-1.5 py-0.2 bg-gray-100">
-                            {auction.item?.declaredCondition ?? "Inspected"}
-                          </span>
-                          <span>
-                            {auction.totalBids ?? 0} {auction.totalBids === 1 ? "lượt bid" : "lượt bids"}
+                      {auction.item?.category && (
+                        <div className="absolute top-2.5 right-2.5">
+                          <span className="claude-badge bg-white/90 backdrop-blur-sm text-[10px] text-[#1F1E1D] font-semibold shadow-sm border border-[#E5E4DE]">
+                            {auction.item.category.name}
                           </span>
                         </div>
+                      )}
 
-                        <h3 className="text-lg font-bold truncate mt-1 hover:underline">
-                          <Link href={`/auctions/${auction.id}`}>{auction.item?.title}</Link>
-                        </h3>
+                      {/* AI Verification Badge */}
+                      {auction.item?.aiReport && (
+                        <div className="absolute bottom-2.5 left-2.5">
+                          <span className="claude-badge bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px] font-bold shadow-sm">
+                            🛡️ {auction.item.aiReport.trustScore}/100 AI VERIFIED
+                          </span>
+                        </div>
+                      )}
 
-                        <p className="text-sm text-gray-700 line-clamp-2 mt-1">
-                          {auction.item?.description}
-                        </p>
-                      </div>
+                      {/* Buyout badge */}
+                      {auction.buyNowPrice && auction.status === "ACTIVE" && (
+                        <div className="absolute bottom-2.5 right-2.5">
+                          <span className="claude-badge bg-amber-50 text-amber-900 border border-amber-200 text-[10px] font-bold shadow-sm">
+                            Mua Ngay: ${auction.buyNowPrice.toLocaleString()}
+                          </span>
+                        </div>
+                      )}
                     </div>
 
-                    {/* Price & Action Footer */}
-                    <div className="p-4 pt-2 border-t-2 border-black bg-gray-50 flex items-center justify-between">
+                    {/* Content Details */}
+                    <div className="p-4 sm:p-5">
+                      <div className="flex items-center justify-between text-xs text-[#6B6A66] mb-1.5">
+                        <span className="font-medium px-2 py-0.5 rounded bg-[#F0EFEA] text-[11px]">
+                          {auction.item?.declaredCondition ?? "Đã kiểm định"}
+                        </span>
+                        <span className="text-[11px]">
+                          {auction.totalBids ?? 0} lượt đặt giá
+                        </span>
+                      </div>
+
+                      <h3 className="text-base font-bold text-[#1F1E1D] line-clamp-1 group-hover:text-[#D97757] transition-colors">
+                        <Link href={`/auctions/${auction.id}`}>{auction.item?.title}</Link>
+                      </h3>
+
+                      <p className="text-xs text-[#6B6A66] line-clamp-2 mt-1 leading-relaxed">
+                        {auction.item?.description}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Price & Action Section */}
+                  <div className="p-4 sm:p-5 pt-3 border-t border-[#E5E4DE] bg-[#FAF9F5] space-y-3">
+                    <div className="flex items-center justify-between">
                       <div>
-                        <span className="text-xs uppercase font-bold text-gray-600 block">
+                        <span className="text-[10px] font-semibold uppercase tracking-wider text-[#6B6A66] block">
                           Giá hiện tại
                         </span>
-                        <span className="text-2xl font-black text-black">
+                        <span className="text-xl font-extrabold text-[#1F1E1D]">
                           ${auction.currentPrice?.toLocaleString() ?? auction.startPrice?.toLocaleString()}
                         </span>
                       </div>
 
                       <div className="text-right">
-                        <div className="text-xs uppercase font-bold text-gray-600 mb-1">
+                        <span className="text-[10px] font-semibold uppercase tracking-wider text-[#6B6A66] block mb-0.5">
                           {auction.status === "UPCOMING" ? "Bắt đầu sau" : "Thời gian còn"}
-                        </div>
+                        </span>
                         {auction.status === "ACTIVE" ? (
-                          <CountdownTimer targetDate={auction.endTime} className="text-sm font-mono font-bold text-red-700" />
+                          <CountdownTimer
+                            targetDate={auction.endTime}
+                            compact
+                            className="text-xs font-mono font-bold text-[#D97757]"
+                          />
                         ) : (
-                          <span className="text-xs font-mono font-bold">
-                            {auction.status === "UPCOMING" ? "Chưa mở" : "Đã đóng"}
+                          <span className="text-xs font-medium text-[#6B6A66]">
+                            {auction.status === "UPCOMING" ? "Chưa mở" : "Đã đóng phiên"}
                           </span>
                         )}
                       </div>
                     </div>
 
-                    {/* Card Button */}
+                    {/* Action button */}
                     <Link
                       href={`/auctions/${auction.id}`}
-                      className="retro-btn retro-btn-primary block text-center py-2 text-base font-bold border-t-2 border-black border-x-0 border-b-0 shadow-none hover:shadow-none hover:bg-yellow-400"
+                      className="w-full claude-btn claude-btn-primary text-xs py-2 font-semibold text-center block"
                     >
                       {auction.status === "ACTIVE" ? "👉 VÀO PHÒNG ĐẤU GIÁ" : "XEM CHI TIẾT"}
                     </Link>
                   </div>
-                );
-              })}
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* 5. Pagination Controls */}
+        {pagination && pagination.totalPages > 1 && (
+          <div className="mt-8 flex items-center justify-center gap-3">
+            <button
+              disabled={page === 0}
+              onClick={() => setPage((p) => Math.max(0, p - 1))}
+              className="claude-btn claude-btn-secondary text-xs disabled:opacity-40"
+            >
+              ← Trang Trước
+            </button>
+
+            <span className="text-xs font-medium text-[#6B6A66] px-3 py-1 bg-white border border-[#E5E4DE] rounded-lg">
+              Trang <strong className="text-[#1F1E1D]">{page + 1}</strong> / {pagination.totalPages}
+            </span>
+
+            <button
+              disabled={page + 1 >= pagination.totalPages}
+              onClick={() => setPage((p) => p + 1)}
+              className="claude-btn claude-btn-secondary text-xs disabled:opacity-40"
+            >
+              Trang Kế →
+            </button>
+          </div>
+        )}
+      </main>
+
+      {/* Footer */}
+      <footer className="border-t border-[#E5E4DE] bg-[#FAF9F5] py-8 text-xs text-[#6B6A66] mt-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-md bg-[#D97757] text-white flex items-center justify-center font-bold text-xs">
+              ✦
             </div>
-          )}
+            <span className="font-bold text-[#1F1E1D]">VERYBID AUCTION CATALOG</span>
+            <span className="text-[#9E9D96]">•</span>
+            <span>Lịch Trình & Kết Quả Đấu Giá Minh Bạch</span>
+          </div>
 
-          {/* Pagination Controls */}
-          {pagination && pagination.totalPages > 1 && (
-            <div className="mt-8 flex items-center justify-center gap-2">
-              <button
-                disabled={page === 0}
-                onClick={() => setPage((p) => Math.max(0, p - 1))}
-                className="retro-btn text-sm disabled:opacity-40"
-              >
-                ← Trang Trước
-              </button>
-
-              <span className="retro-badge px-3 py-1 font-bold">
-                Trang {page + 1} / {pagination.totalPages}
-              </span>
-
-              <button
-                disabled={page + 1 >= pagination.totalPages}
-                onClick={() => setPage((p) => p + 1)}
-                className="retro-btn text-sm disabled:opacity-40"
-              >
-                Trang Kế →
-              </button>
-            </div>
-          )}
-        </main>
-      </div>
+          <div className="flex items-center gap-6">
+            <Link href="/" className="hover:text-[#1F1E1D]">
+              Trang Chủ
+            </Link>
+            <Link href="/sell" className="hover:text-[#1F1E1D]">
+              Đăng Bán
+            </Link>
+            <span className="text-[#9E9D96]">© 2026 VeryBid.</span>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

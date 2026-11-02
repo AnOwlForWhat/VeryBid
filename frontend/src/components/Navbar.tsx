@@ -62,6 +62,12 @@ export function Navbar() {
               >
                 Sàn Đấu Giá
               </Link>
+              <Link
+                href="/auctions"
+                className="px-3 py-1.5 rounded-md text-[#6B6A66] hover:text-[#1F1E1D] hover:bg-[#F0EFEA] transition-colors"
+              >
+                Lịch Trình & Kết Quả
+              </Link>
 
               {/* Show Sell button in nav if logged in */}
               {isAuthenticated && (
@@ -183,6 +189,13 @@ export function Navbar() {
               className="block px-3 py-2 rounded-md text-sm font-medium text-[#1F1E1D] hover:bg-[#F0EFEA]"
             >
               🏛️ Sàn Đấu Giá
+            </Link>
+            <Link
+              href="/auctions"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block px-3 py-2 rounded-md text-sm font-medium text-[#1F1E1D] hover:bg-[#F0EFEA]"
+            >
+              📅 Lịch Trình & Kết Quả Đấu Giá
             </Link>
 
             {isAuthenticated ? (

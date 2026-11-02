@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Navbar } from "@/components/Navbar";
 import { CountdownTimer } from "@/components/CountdownTimer";
 import { AuthModal } from "@/components/AuthModal";
+import { HistoricalAuctionResultCard } from "@/components/HistoricalAuctionResultCard";
 import { useAuth } from "@/context/AuthContext";
 import { auctionApi } from "@/services/auctionApi";
 import { Auction, AuctionStatus, Category } from "@/types/auction";
@@ -312,6 +313,15 @@ export default function Home() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {auctions.map((auction) => {
+              if (auction.status === "ENDED") {
+                return (
+                  <HistoricalAuctionResultCard
+                    key={auction.id}
+                    auction={auction}
+                  />
+                );
+              }
+
               const thumbnail =
                 auction.item?.images?.find((img) => img.isThumbnail)?.imageUrl ||
                 auction.item?.images?.[0]?.imageUrl ||

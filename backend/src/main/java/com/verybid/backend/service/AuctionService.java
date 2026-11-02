@@ -80,8 +80,22 @@ public class AuctionService {
             int page,
             int size
     ) {
+        return getAuctions(status, categoryId, keyword, null, page, size);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<AuctionResponse> getAuctions(
+            AuctionStatus status,
+            Long categoryId,
+            String keyword,
+            java.time.LocalDate date,
+            int page,
+            int size
+    ) {
+        LocalDateTime startOfDay = date != null ? date.atStartOfDay() : null;
+        LocalDateTime endOfDay = date != null ? date.atTime(23, 59, 59, 999999999) : null;
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<Auction> auctions = auctionRepository.findWithFilters(status, categoryId, keyword, pageable);
+        Page<Auction> auctions = auctionRepository.findWithFilters(status, categoryId, keyword, startOfDay, endOfDay, pageable);
         return auctions.map(AuctionResponse::fromEntity);
     }
 

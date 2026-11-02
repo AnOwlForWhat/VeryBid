@@ -38,10 +38,11 @@ public class AuctionController {
             @RequestParam(required = false) AuctionStatus status,
             @RequestParam(required = false) Long categoryId,
             @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate date,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        Page<AuctionResponse> auctions = auctionService.getAuctions(status, categoryId, keyword, page, size);
+        Page<AuctionResponse> auctions = auctionService.getAuctions(status, categoryId, keyword, date, page, size);
         return ResponseEntity.ok(ApiResponse.success(auctions));
     }
 

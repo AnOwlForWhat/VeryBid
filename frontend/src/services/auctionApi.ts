@@ -17,6 +17,7 @@ export interface GetAuctionsParams {
   status?: AuctionStatus;
   categoryId?: number;
   keyword?: string;
+  date?: string; // YYYY-MM-DD
   page?: number;
   size?: number;
 }

@@ -75,7 +75,7 @@ class AuctionControllerTests {
         AuctionResponse response = sampleAuctionResponse(auctionId);
         PageImpl<AuctionResponse> page = new PageImpl<>(List.of(response));
 
-        when(auctionService.getAuctions(any(), any(), any(), anyInt(), anyInt())).thenReturn(page);
+        when(auctionService.getAuctions(any(), any(), any(), any(), anyInt(), anyInt())).thenReturn(page);
 
         mockMvc.perform(get("/api/v1/auctions"))
                 .andExpect(status().isOk())
