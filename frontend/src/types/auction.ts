@@ -138,7 +138,7 @@ export interface CreateItemPayload {
   description: string;
   declaredCondition: string;
   suggestedStartingPrice: number;
-  categoryId: number;
+  categoryId?: number | null;
   images: CreateItemImagePayload[];
 }
 

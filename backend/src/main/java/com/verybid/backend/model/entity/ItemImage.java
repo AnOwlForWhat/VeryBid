@@ -24,7 +24,7 @@ public class ItemImage {
     @JoinColumn(name = "item_id", nullable = false)
     private Item item;
 
-    @Column(nullable = false, length = 500)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String imageUrl;
 
     @Enumerated(EnumType.STRING)

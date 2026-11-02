@@ -74,6 +74,11 @@ public class DatabaseSeeder implements CommandLineRunner {
                             .name("Luxury Watches")
                             .slug("luxury-watches")
                             .description("Swiss chronographs, vintage timepieces, and rare horology")
+                            .build(),
+                    Category.builder()
+                            .name("Chờ AI nhận diện & phân loại")
+                            .slug("unclassified")
+                            .description("Vật phẩm chưa phân loại - Chờ hệ thống AI Gemini Vision và Ban kiểm duyệt đối soát và gán danh mục")
                             .build()
             );
 

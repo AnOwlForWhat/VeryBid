@@ -32,7 +32,6 @@ public class CreateItemRequest {
     @DecimalMin(value = "0.01", message = "Suggested starting price must be greater than zero")
     private BigDecimal suggestedStartingPrice;
 
-    @NotNull(message = "Category ID is required")
     private Long categoryId;
 
     @Builder.Default

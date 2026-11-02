@@ -20,6 +20,8 @@ public class ReviewItemRequest {
 
     private String moderatorNote;
 
+    private Long categoryId;
+
     @Builder.Default
     private Boolean createAuction = false;
 

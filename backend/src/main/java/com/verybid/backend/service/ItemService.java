@@ -40,8 +40,19 @@ public class ItemService {
         User seller = userRepository.findByEmail(sellerEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "email", sellerEmail));
 
-        Category category = categoryRepository.findById(request.getCategoryId())
-                .orElseThrow(() -> new ResourceNotFoundException("Category", "id", request.getCategoryId()));
+        Category category;
+        if (request.getCategoryId() != null) {
+            category = categoryRepository.findById(request.getCategoryId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Category", "id", request.getCategoryId()));
+        } else {
+            // Mặc định gắn nhãn "Chờ AI nhận diện & phân loại" nếu người bán không phân loại thủ công
+            category = categoryRepository.findBySlug("unclassified")
+                    .orElseGet(() -> categoryRepository.save(Category.builder()
+                            .name("Chờ AI nhận diện & phân loại")
+                            .slug("unclassified")
+                            .description("Vật phẩm chưa phân loại - Chờ hệ thống AI Gemini Vision và Ban kiểm duyệt đối soát và gán danh mục")
+                            .build()));
+        }
 
         Item item = Item.builder()
                 .seller(seller)
@@ -108,6 +119,12 @@ public class ItemService {
                 .orElseThrow(() -> new ResourceNotFoundException("Item", "id", id));
 
         item.setStatus(request.getStatus());
+
+        if (request.getCategoryId() != null) {
+            Category newCategory = categoryRepository.findById(request.getCategoryId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Category", "id", request.getCategoryId()));
+            item.setCategory(newCategory);
+        }
 
         if (item.getAiReport() != null && request.getModeratorNote() != null) {
             item.getAiReport().setModeratorNote(request.getModeratorNote());
