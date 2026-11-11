@@ -117,6 +117,34 @@ flowchart TD
 
 ---
 
+## 📋 Yêu cầu chức năng
+
+### 1. Tài khoản Quản trị viên (Admin)
+- Quản lý dữ liệu hệ thống theo CRUD: tài khoản người dùng, danh mục, sản phẩm, phiên đấu giá và các báo cáo AI.
+- Thiết lập trạng thái phiên đấu giá, theo dõi lịch sử thao tác và xử lý các trường hợp vi phạm quy định sàn.
+
+### 2. Tài khoản Kiểm duyệt viên (Moderator)
+- Kiểm duyệt sản phẩm **sau khi** hệ thống AI hoàn tất kiểm tra.
+- Đối chiếu thông tin người bán khai báo với báo cáo AI: loại hàng, nhận dạng sản phẩm, tình trạng, cờ rủi ro và giá trị ước tính.
+- Chỉ cho phép sản phẩm có xác nhận kiểm duyệt được tạo hoặc công khai trong phiên đấu giá; có thể yêu cầu bổ sung thông tin hoặc từ chối hồ sơ kèm lý do.
+
+### 3. Kiểm tra bằng AI
+- Chỉ khởi tạo thẩm định khi người dùng tải đủ số ảnh tối thiểu và đầy đủ các góc ảnh bắt buộc của sản phẩm.
+- AI nhận dạng sản phẩm, kiểm tra tính nhất quán giữa ảnh và thông tin khai báo, đồng thời phát hiện các dấu hiệu rủi ro như thiếu tem/mã serial hoặc ảnh không phù hợp.
+- Kết quả AI phải bao gồm: loại hàng đề xuất, thông tin nhận dạng, mô tả/tình trạng, giá trị ước tính và điểm tin cậy để kiểm duyệt viên ra quyết định.
+
+### 4. Tài khoản khách hàng (Người mua / Người đăng đấu giá)
+- Xem danh sách và lịch các phiên đấu giá sắp diễn ra; xem chi tiết sản phẩm và thông tin xác thực trước khi tham gia.
+- Người bán có thể tạo hồ sơ đăng sản phẩm lên sàn, nhưng phải cung cấp tối thiểu số ảnh theo quy định và đủ các góc chụp bắt buộc.
+- Hồ sơ đăng tải bắt buộc có: **loại hàng, giá trị ước tính, mô tả và bộ ảnh xác thực**. Sản phẩm chỉ được đăng bán sau khi nhận xác nhận kiểm duyệt.
+
+### 5. Quy tắc xác nhận sản phẩm
+- Mỗi sản phẩm phải lưu vết kết quả AI và quyết định kiểm duyệt (người duyệt, thời điểm, trạng thái và lý do nếu từ chối/yêu cầu bổ sung).
+- Trạng thái tối thiểu: `DRAFT` → `PENDING_AI_CHECK` → `PENDING_MODERATION` → `APPROVED` hoặc `REJECTED` / `NEEDS_MORE_INFO`.
+- Sản phẩm chưa ở trạng thái `APPROVED` không được phép xuất hiện trong lịch hoặc phòng đấu giá công khai.
+
+---
+
 ## 💻 Hướng dẫn chạy Development (Local Hot-Reload)
 
 Nếu bạn muốn chỉnh sửa code và tận dụng tính năng hot-reload:
